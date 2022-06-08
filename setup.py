@@ -17,6 +17,24 @@ def read_readme():
     return content
 
 
+def get_package_data():
+    pkgname = "civiq6"
+    pkg_datapaths = ["py.typed", "examples"]
+
+    ret = []
+    for path in pkg_datapaths:
+        fullpath = os.path.join(pkgname, path)
+        if os.path.isfile(fullpath):
+            ret.append(path)
+        else:
+            for root, dirs, files in os.walk(fullpath):
+                for filename in files:
+                    filepath = os.path.join(root, filename)
+                    ret.append(os.path.join(*filepath.split(os.sep)[1:]))
+
+    return {pkgname: ret}
+
+
 def read_requirements(path):
     with open(path, "r") as f:
         ret = f.read().splitlines()
@@ -67,7 +85,7 @@ setup(
     url="https://github.com/JSS95/civiq6",
     license="BSD 2-Clause",
     packages=find_packages(),
-    package_data={"civiq6": ["py.typed"]},
+    package_data=get_package_data(),
     install_requires=read_requirements("requirements/install.txt"),
     extras_require=get_extras_require(),
 )
