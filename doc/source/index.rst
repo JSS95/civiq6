@@ -6,11 +6,13 @@
 Welcome to CIViQ6's documentation!
 ==================================
 
+This is the central page for all documents.
+
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
-
+   API reference <reference/index>
 
 Indices and tables
 ==================
