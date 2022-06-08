@@ -1,2 +1,1 @@
 qimage2ndarray >= 1.9
-VimbaPython

@@ -1,3 +1,9 @@
+"""
+Vimba instance and camera device
+================================
+
+"""
+
 from typing import Optional, List, TYPE_CHECKING
 import vimba  # type: ignore[import]
 from .dynqt6 import QtCore

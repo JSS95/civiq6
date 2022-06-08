@@ -1,3 +1,9 @@
+"""
+Capturing with Vimba
+====================
+
+"""
+
 import cv2  # type: ignore[import]
 import dataclasses
 import enum
