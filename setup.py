@@ -26,6 +26,7 @@ def read_requirements(path):
 def get_extras_require():
     ret = {}
 
+    ret["test"] = read_requirements("requirements/test.txt")
     ret["doc"] = read_requirements("requirements/doc.txt")
     ret["full"] = list(set(chain(*ret.values())))
 
@@ -66,6 +67,7 @@ setup(
     url="https://github.com/JSS95/civiq6",
     license="BSD 2-Clause",
     packages=find_packages(),
+    package_data={"civiq6": ["py.typed"]},
     install_requires=read_requirements("requirements/install.txt"),
     extras_require=get_extras_require(),
 )
