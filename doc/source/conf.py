@@ -17,9 +17,9 @@
 
 # -- Project information -----------------------------------------------------
 
-project = 'CIViQ6'
-copyright = '2022, Jisoo Song'
-author = 'Jisoo Song'
+project = "CIViQ6"
+copyright = "2022, Jisoo Song"
+author = "Jisoo Song"
 
 
 # -- General configuration ---------------------------------------------------
