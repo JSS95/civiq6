@@ -44,7 +44,7 @@ jobs:
 
       - name: install dependencies
         run: |
-          pip install -r requirements/test.txt
+          pip install -r requirements/install.txt requirements/test.txt
 
       - name: run mypy check
         run: mypy civiq6
@@ -66,6 +66,10 @@ jobs:
       - name: install dependencies
         run: |
           pip install -r requirements/doc.txt
+
+      - name: install package
+        run: |
+          pip install .[doc]
 
       - name: build document
         run: |
