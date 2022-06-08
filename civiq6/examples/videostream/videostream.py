@@ -1,5 +1,5 @@
 """
-Video streaming example.
+Basic video streaming example.
 """
 
 import numpy as np
@@ -16,6 +16,8 @@ class ArrayImageSink(ArraySink):
     imageChanged = Signal(QImage)
 
     def setArray(self, array: np.ndarray):
+        # Directly called by camera thread.
+        # QImage constructed here (not in GUI thread) to avoid GUI blocking.
         super().setArray(array)
         self.imageChanged.emit(array2qimage(array))
 
