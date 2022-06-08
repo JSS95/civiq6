@@ -1,10 +1,23 @@
 """
-Video streaming example with multithreaded Gaussian blurring process.
+Video streaming example.
 """
 
-from PySide6.QtCore import QThread, QEventLoop, Qt
+import numpy as np
+from PySide6.QtCore import Signal, Slot, QThread, QEventLoop, Qt
+from PySide6.QtGui import QImage, QPixmap
 from PySide6.QtWidgets import QMainWindow, QLabel
+from qimage2ndarray import array2qimage
 from civiq6 import VimbaRunner, VimbaCamera, VimbaCaptureSession, ArraySink
+
+
+class ArrayImageSink(ArraySink):
+    """Array sink to directly update the label."""
+
+    imageChanged = Signal(QImage)
+
+    def setArray(self, array: np.ndarray):
+        super().setArray(array)
+        self.imageChanged.emit(array2qimage(array))
 
 
 class Window(QMainWindow):
@@ -23,12 +36,13 @@ class Window(QMainWindow):
 
         self._camera = VimbaCamera()
         self._capture_session = VimbaCaptureSession()
-        self._array_sink = ArraySink()
+        self._array_sink = ArrayImageSink()
+        self._label = QLabel()
 
         self.captureSession().setCamera(self.camera())
         self.captureSession().setArraySink(self.arraySink())
+        self.arraySink().imageChanged.connect(self.setImageToLabel)
 
-        self._label = QLabel()
         self.label().setAlignment(Qt.AlignCenter)
         self.setCentralWidget(self.label())
 
@@ -47,11 +61,15 @@ class Window(QMainWindow):
     def captureSession(self) -> VimbaCaptureSession:
         return self._capture_session
 
-    def arraySink(self) -> ArraySink:
+    def arraySink(self) -> ArrayImageSink:
         return self._array_sink
 
     def label(self) -> QLabel:
         return self._label
+
+    @Slot(QImage)
+    def setImageToLabel(self, image: QImage):
+        self.label().setPixmap(QPixmap.fromImage(image))
 
     def closeEvent(self, event):
         self.vimbaRunner().stopVimba()
