@@ -1,4 +1,5 @@
 from itertools import chain
+import os
 from setuptools import setup, find_packages  # type: ignore[import]
 
 
