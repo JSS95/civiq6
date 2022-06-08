@@ -4,7 +4,7 @@ Video streaming example with multithreaded Gaussian blurring process.
 
 from PySide6.QtCore import QThread, QEventLoop, Qt
 from PySide6.QtWidgets import QMainWindow, QLabel
-from civiq6 import VimbaRunner
+from civiq6 import VimbaRunner, VimbaCamera, VimbaCaptureSession, ArraySink
 
 
 class Window(QMainWindow):
@@ -21,16 +21,34 @@ class Window(QMainWindow):
         self.vimbaThread().start()
         self._waitVimba.exec()
 
-        self._label = QLabel()
+        self._camera = VimbaCamera()
+        self._capture_session = VimbaCaptureSession()
+        self._array_sink = ArraySink()
 
+        self.captureSession().setCamera(self.camera())
+        self.captureSession().setArraySink(self.arraySink())
+
+        self._label = QLabel()
         self.label().setAlignment(Qt.AlignCenter)
         self.setCentralWidget(self.label())
+
+        # start camera
+        self.camera().start()
 
     def vimbaThread(self) -> QThread:
         return self._vimbaThread
 
     def vimbaRunner(self) -> VimbaRunner:
         return self._vimbaRunner
+
+    def camera(self) -> VimbaCamera:
+        return self._camera
+
+    def captureSession(self) -> VimbaCaptureSession:
+        return self._capture_session
+
+    def arraySink(self) -> ArraySink:
+        return self._array_sink
 
     def label(self) -> QLabel:
         return self._label
