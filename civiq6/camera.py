@@ -37,7 +37,7 @@ class VimbaCamera(QtCore.QObject):
         self._captureSession = None
         self._active = False
 
-        self._frameQueue: queue.Queue = queue.Queue(10)
+        self._frameQueue: queue.Queue = queue.Queue()
         self._frameProducer = FrameProducer(cameraDevice._Camera, self._frameQueue)
         self._waitProducerReady = QtCore.QEventLoop(self)
         self._frameConsumer = FrameConsumer(self._frameQueue)
