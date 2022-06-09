@@ -190,16 +190,35 @@ class ArraySink(QtCore.QObject):
 
 
 class VimbaImageCapture(QtCore.QObject):
+    """
+    Class to capture still images from the camera.
+
+    This class is a high level images recording class, intended to be used with
+    :class:`VimbaCaptureSession`.
+
+    .. code:: python
+
+       camera = VimbaCamera()
+       captureSession = VimbaCaptureSession()
+       imageCapture = VimbaImageCapture()
+       captureSession.setCamera(camera)
+       captureSession.setImageCapture(imageCapture)
+       camera.start()
+       imageCapture.capture()
+
+    """
 
     fileFormatChanged = QtCore.Signal()
     imageSaved = QtCore.Signal(int, str)
 
     class FileFormat(enum.IntEnum):
+        """Enumerates the image file formats."""
         JPEG = 1
         PNG = 2
 
     @classmethod
     def supportedFormats(cls) -> List[FileFormat]:
+        """Returns the list of supported image file formats."""
         return list(cls.FileFormat)
 
     @classmethod
@@ -242,17 +261,34 @@ class VimbaImageCapture(QtCore.QObject):
         self._capturing = False
 
     def captureSession(self) -> Optional[VimbaCaptureSession]:
+        """
+        Returns the capture session that provides the video frames, or `None` if
+        not connected to a capture session.
+
+        Use :meth:`VimbaCaptureSession.setImageCapture` to connect the image
+        capture to a session.
+        """
         return self._captureSession
 
     def fileFormat(self) -> FileFormat:
+        """Image file format that still images will be saved as."""
         return self._fileFormat
 
     def setFileFormat(self, fileFormat: FileFormat):
+        """Set :meth:`fileFormat` and emit :attr:`fileFormatChanged` signal."""
         self._fileFormat = fileFormat
         self.fileFormatChanged.emit()
 
     @QtCore.Slot(str)
     def captureToFile(self, location: str = "") -> int:
+        """
+        Capture the image, save it to file, and return id of the captured image.
+
+        *location* is the path to the file without extension. File format and
+        extension are determined by :meth:`fileFormat`.
+
+        Captured image id and path are emitted by :attr:`imageSaved` signal.
+        """
         if self.captureSession() is None or self._image is None:
             return -1
         self._capturing = True
@@ -269,6 +305,7 @@ class VimbaImageCapture(QtCore.QObject):
         return ret
 
     def _setArray(self, array: npt.NDArray[np.uint8]):
+        """Internal method for :class:`VimbaCaptureSession` to provide frames."""
         if not self._capturing:
             self._image = array
 
