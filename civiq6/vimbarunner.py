@@ -27,9 +27,21 @@ class VimbaRunner(QtCore.QObject):
     Class to run the Vimba instance.
 
     :class:`VimbaRunner` manages the camera change event by running the Vimba
-    instance in event loop. To access the camera, this class must be run first.
+    instance in event loop. Once Vimba instance is successfully run,
+    :attr:`vimbaReady` signal is emitted.
 
-    Typical way to use this class is to move the instance to dedicated thread.
+    To access the cameras, this instance must be run first. Typical way to use is
+    to move the instance to dedicated thread.
+
+    This example runs :class:`VimbaRunner` in dedicated thread:
+
+    .. code:: python
+
+       vimbaThread = QThread()
+       vimbaRunner = VimbaRunner()
+       vimbaRunner.moveToThread(vimbaThread)
+       vimbaThread.started.connect(vimbaRunner.runVimba)
+       vimbaThread.start()
 
     :class:`VimbaRunner` is a singleton object.
 
