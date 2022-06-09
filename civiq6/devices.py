@@ -121,13 +121,13 @@ class VimbaCameraDevice(QtCore.QObject):
             self._id = other._id
             self._desc = other._desc
 
-    def __eq__(self, other: "VimbaCameraDevice"):
+    def __eq__(self, other):
         """
         Returns true if this :class:`VimbaCameraDevice` is equal to `other`.
         """
         return type(self) == type(other) and self._Camera == other._Camera
 
-    def __ne__(self, other: "VimbaCameraDevice"):
+    def __ne__(self, other):
         """
         Returns true if this :class:`VimbaCameraDevice` is different from
         `other`.
