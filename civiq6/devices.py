@@ -101,6 +101,7 @@ class VimbaCameraDevice(QtCore.QObject):
        print(device.resolution())
 
     """
+
     @classmethod
     def fromCamera(cls, camera: vimba.Camera):
         obj = cls()
