@@ -6,7 +6,6 @@ import numpy as np
 from PySide6.QtCore import QObject, Signal, Slot, QThread, QEventLoop, Qt
 from PySide6.QtGui import QImage, QPixmap
 from PySide6.QtWidgets import QMainWindow, QLabel
-from qimage2ndarray import array2qimage
 import time
 from civiq6 import VimbaRunner, VimbaCamera, VimbaCaptureSession, ArraySink
 
@@ -23,19 +22,14 @@ class ArrayProcessor(QObject):
 class ArrayProcessingSink(ArraySink):
     """Array sink to emit array only when the processor is ready."""
 
-    imageChanged = Signal(QImage)
-
     def __init__(self, parent=None):
         super().__init__(parent)
         self.ready = True
 
     def setArray(self, array: np.ndarray):
-        # For unknown reason, sending ndarray by signal greatly lags the thread.
-        # Therefore we send image here.
         if self.ready:
             self.ready = False
             super().setArray(array)
-            self.imageChanged.emit(array2qimage(array))
 
     def setReady(self):
         self.ready = True
