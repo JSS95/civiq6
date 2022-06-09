@@ -19,3 +19,4 @@ class Qt6Driver(QtDriver):
 
 Qt6 = Qt6Driver()
 QtCore = Qt6.QtCore
+QtGui = Qt6.QtGui

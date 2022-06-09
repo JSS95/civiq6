@@ -10,10 +10,11 @@ import enum
 import numpy as np
 import numpy.typing as npt
 import os
+from qimage2ndarray import array2qimage
 from typing import Optional, List
 import vimba  # type: ignore[import]
 from .camera import VimbaCamera
-from .dynqt6 import QtCore
+from .dynqt6 import QtCore, QtGui
 
 
 __all__ = [
@@ -96,9 +97,21 @@ class VimbaCaptureSession(QtCore.QObject):
 
 
 class ArraySink(QtCore.QObject):
+    """
+    Object to receive the array from :class:`VimbaCaptureSession` and emit as
+    `QImage` to :attr:`imagechanged` signal.
 
-    arrayChanged = QtCore.Signal(np.ndarray)
-    arraySizeChanged = QtCore.Signal(QtCore.QSize)
+    Notes
+    =====
+
+    For unknown reason, passing the numpy array through signal-slot greatly
+    reduces the thread performance. Therefore it is converted to `QImage` first
+    and then emitted.
+
+    """
+
+    imageChanged = QtCore.Signal(QtGui.QImage)
+    videoSizeChanged = QtCore.Signal(QtCore.QSize)
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -112,15 +125,23 @@ class ArraySink(QtCore.QObject):
         return self._arraySize
 
     def setArray(self, array: npt.NDArray[np.uint8]):
+        """
+        Set :meth:`array` with new array and emit :attr:`imageChanged`. If the
+        new array size is different from the size of previously passed array,
+        :class:`videoSizeChanged` is emitted.
+
+        This method is called directly by :class:`VimbaCaptureSession`, and runs
+        in the same thread with the capture session.
+        """
         self._array = array
-        self.arrayChanged.emit(array)
+        self.imageChanged.emit(array2qimage(array))
 
         oldsize = self.arraySize()
         h, w = array.shape[:2]
         newsize = QtCore.QSize(w, h)
         if oldsize != newsize:
             self._arraySize = newsize
-            self.arraySizeChanged.emit(newsize)
+            self.videoSizeChanged.emit(newsize)
 
 
 class VimbaImageCapture(QtCore.QObject):

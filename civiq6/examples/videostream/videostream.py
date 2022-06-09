@@ -2,24 +2,10 @@
 Basic video streaming example.
 """
 
-import numpy as np
-from PySide6.QtCore import Signal, Slot, QThread, QEventLoop, Qt
+from PySide6.QtCore import Slot, QThread, QEventLoop, Qt
 from PySide6.QtGui import QImage, QPixmap
 from PySide6.QtWidgets import QMainWindow, QLabel
-from qimage2ndarray import array2qimage
 from civiq6 import VimbaRunner, VimbaCamera, VimbaCaptureSession, ArraySink
-
-
-class ArrayImageSink(ArraySink):
-    """Array sink to directly update the label."""
-
-    imageChanged = Signal(QImage)
-
-    def setArray(self, array: np.ndarray):
-        # Directly called by camera thread.
-        # QImage constructed here (not in GUI thread) to avoid GUI blocking.
-        super().setArray(array)
-        self.imageChanged.emit(array2qimage(array))
 
 
 class Window(QMainWindow):
@@ -38,7 +24,7 @@ class Window(QMainWindow):
 
         self._camera = VimbaCamera()
         self._capture_session = VimbaCaptureSession()
-        self._array_sink = ArrayImageSink()
+        self._array_sink = ArraySink()
         self._label = QLabel()
 
         self.captureSession().setCamera(self.camera())
@@ -63,7 +49,7 @@ class Window(QMainWindow):
     def captureSession(self) -> VimbaCaptureSession:
         return self._capture_session
 
-    def arraySink(self) -> ArrayImageSink:
+    def arraySink(self) -> ArraySink:
         return self._array_sink
 
     def label(self) -> QLabel:
