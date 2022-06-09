@@ -1,12 +1,13 @@
 """
-Video streaming and processing.
+Video processing example with multithreaded Gaussian blurring.
 """
 
+import cv2
 import numpy as np
 from PySide6.QtCore import QObject, Signal, Slot, QThread, QEventLoop, Qt
 from PySide6.QtGui import QImage, QPixmap
 from PySide6.QtWidgets import QMainWindow, QLabel
-import time
+from qimage2ndarray import rgb_view, array2qimage
 from civiq6 import VimbaRunner, VimbaCamera, VimbaCaptureSession, ArraySink
 
 
@@ -15,7 +16,9 @@ class ArrayProcessor(QObject):
 
     @Slot(QImage)
     def setImage(self, image: QImage):
-        time.sleep(0.05)  # represents long processing
+        array = rgb_view(image)
+        ret = cv2.GaussianBlur(array, (0, 0), 25)
+        image = array2qimage(ret)
         self.imageChanged.emit(image)
 
 
