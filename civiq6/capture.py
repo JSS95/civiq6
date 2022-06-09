@@ -2,6 +2,9 @@
 Capturing with Vimba
 ====================
 
+:mod:`civiq6.capture` provides interface to acquire the frames from
+:class:`VimbaCamera` and to save them.
+
 """
 
 import cv2  # type: ignore[import]
@@ -30,6 +33,19 @@ VIMBA_LOGGER = vimba.Log.get_instance()
 
 
 class VimbaCaptureSession(QtCore.QObject):
+    """
+    Class to acquire the frames from :class:`VimbaCamera`.
+
+    This is the central class that manages capturing of the video from camera.
+
+    You can connect a camera to :class:`VimbaCaptureSession` using
+    :meth:`setCamera`. Video frames can be acquired by setting :class:`ArraySink`
+    using :meth:`setArraySink`.
+
+    You can capture still images by setting a :class:`VimbaImageCapture` object
+    on the capture session, and record video using a :class:`VimbaVideoRecorder`.
+
+    """
 
     cameraChanged = QtCore.Signal()
     imageCaptureChanged = QtCore.Signal()
@@ -43,18 +59,39 @@ class VimbaCaptureSession(QtCore.QObject):
         self._recorder = None
 
     def camera(self) -> Optional[VimbaCamera]:
+        """
+        The camera used to capture video.
+
+        Set the camera with :meth:`setCamera` to record video or to take images.
+        """
         return self._camera
 
     def arraySink(self) -> Optional["ArraySink"]:
+        """
+        Object to receive the video frame as numpy array and emit as `QImage`.
+
+        Set the array sink with :meth:`setArraySink` to acquire the frames.
+        """
         return self._arraySink
 
     def imageCapture(self) -> Optional["VimbaImageCapture"]:
+        """
+        Object to capture still images.
+
+        Set the image capture with :meth:`setImageCapture` to capture images.
+        """
         return self._imageCapture
 
     def recorder(self) -> Optional["VimbaVideoRecorder"]:
+        """
+        The recorder object used to capture video.
+
+        Set the recorder with :meth:`setRecorder` to capture video.
+        """
         return self._recorder
 
     def setCamera(self, camera: Optional[VimbaCamera]):
+        """Set the new camera and emit :attr:`cameraChanged` signal."""
         old_camera = self.camera()
         if old_camera is not None:
             old_camera._removeCaptureSession()
@@ -64,9 +101,13 @@ class VimbaCaptureSession(QtCore.QObject):
         self.cameraChanged.emit()
 
     def setArraySink(self, sink: Optional["ArraySink"]):
+        """Set the new array sink."""
         self._arraySink = sink
 
     def setImageCapture(self, imageCapture: Optional["VimbaImageCapture"]):
+        """
+        Set the new image capture and emit :attr:`imageCaptureChanged` signal.
+        """
         old_cap = self.imageCapture()
         if old_cap is not None:
             old_cap._captureSession = None
@@ -76,6 +117,7 @@ class VimbaCaptureSession(QtCore.QObject):
         self.imageCaptureChanged.emit()
 
     def setRecorder(self, recorder: Optional["VimbaVideoRecorder"]):
+        """Set the new recorder and emit :attr:`recorderChanged` signal."""
         old_rec = self.recorder()
         if old_rec is not None:
             old_rec._captureSession = None
@@ -84,7 +126,8 @@ class VimbaCaptureSession(QtCore.QObject):
             recorder._captureSession = self
         self.recorderChanged.emit()
 
-    def setArray(self, array: npt.NDArray[np.uint8]):
+    def _setArray(self, array: npt.NDArray[np.uint8]):
+        """Internal method used by :class:`VimbaCamera` to pass frame array."""
         sink = self.arraySink()
         if sink is not None:
             sink.setArray(array)

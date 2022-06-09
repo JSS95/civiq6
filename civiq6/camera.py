@@ -241,7 +241,7 @@ class FrameConsumer(QtCore.QObject):
                 cv_img = self.frame.as_opencv_image().copy()
                 session = self.captureSession
                 if session is not None:
-                    session.setArray(cv_img)
+                    session._setArray(cv_img)
             except queue.Empty:
                 pass
 
