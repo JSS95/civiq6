@@ -11,7 +11,9 @@ from qimage2ndarray import rgb_view, array2qimage
 from civiq6 import VimbaRunner, VimbaCamera, VimbaCaptureSession, ArraySink
 
 
-class ArrayProcessor(QObject):
+class BlurringProcessor(QObject):
+    """Object to perform Gaussian blurring on the image."""
+
     imageChanged = Signal(QImage)
 
     @Slot(QImage)
@@ -23,7 +25,7 @@ class ArrayProcessor(QObject):
 
 
 class ArrayProcessingSink(ArraySink):
-    """Array sink to emit array only when the processor is ready."""
+    """Array sink to emit array only when ready."""
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -56,15 +58,15 @@ class Window(QMainWindow):
         self._capture_session = VimbaCaptureSession()
         self._array_sink = ArrayProcessingSink()
         self._processorThread = QThread()
-        self._array_processor = ArrayProcessor()
+        self._array_processor = BlurringProcessor()
         self._label = QLabel()
 
         self.captureSession().setCamera(self.camera())
         self.captureSession().setArraySink(self.arraySink())
-        self.arraySink().imageChanged.connect(self.arrayProcessor().setImage)
-        self.arrayProcessor().imageChanged.connect(self.setImageToLabel)
+        self.arraySink().imageChanged.connect(self.blurringProcessor().setImage)
+        self.blurringProcessor().imageChanged.connect(self.setImageToLabel)
 
-        self.arrayProcessor().moveToThread(self.processorThread())
+        self.blurringProcessor().moveToThread(self.processorThread())
         self.processorThread().start()
 
         self.label().setAlignment(Qt.AlignCenter)
@@ -91,7 +93,7 @@ class Window(QMainWindow):
     def processorThread(self) -> QThread:
         return self._processorThread
 
-    def arrayProcessor(self) -> ArrayProcessor:
+    def blurringProcessor(self) -> BlurringProcessor:
         return self._array_processor
 
     def label(self) -> QLabel:
