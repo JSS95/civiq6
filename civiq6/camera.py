@@ -2,6 +2,11 @@
 Vimba camera interface
 ======================
 
+:mod:`civiq6.camera` provides interface for camera devices.
+
+.. autoclass:: VimbaCamera
+   :members:
+
 """
 
 import copy
@@ -27,6 +32,27 @@ VIMBA_LOGGER = vimba.Log.get_instance()
 
 
 class VimbaCamera(QtCore.QObject):
+    """
+    Class to acquire frames from camera device.
+
+    :class:`VimbaCamera` can be used within a :class:`VimbaCaptureSession` for
+    video recording and image taking.
+
+    You can construct :class:`VimbaCamera` by passing :class:`VimbaCameraDevice`.
+
+    .. code:: python
+
+       devices = VimbaDevices.videoInputs()
+       camera = VimbaCamera(devices[0])
+
+    Or you can set :class:`VimbaCameraDevice` to existing :class:`VimbaCamera`.
+
+    .. code:: python
+
+       camera = VimbaCamera()
+       camera.setCameraDevice(VimbaDevices.defaultVideoInput())
+
+    """
 
     activeChanged = QtCore.Signal(bool)
 
@@ -54,15 +80,29 @@ class VimbaCamera(QtCore.QObject):
         return self._cameraDevice
 
     def captureSession(self) -> Optional["VimbaCaptureSession"]:
+        """
+        Returns the capture session this camera is connected to, or ``None`` if
+        the camera is not connected to a capture session.
+
+        Use :meth:`VimbaCaptureSession.setCamera` to connect the camera to a
+        session.
+        """
         return self._captureSession
 
     def isAvailable(self) -> bool:
+        """Returns true if the camera can be used."""
         return not self.cameraDevice().isNull()
 
     def isActive(self) -> bool:
+        """Describes whether the camera is currently active."""
         return self._active
 
     def setCameraDevice(self, device: Optional[VimbaCameraDevice] = None):
+        """
+        Set the device that the camera interface represents.
+
+        Camera restarts if it was running before the device is changed.
+        """
         was_running = self.isActive()
         self.stop()
         self._disconnectFrameProducer(self._frameProducer)
@@ -90,6 +130,13 @@ class VimbaCamera(QtCore.QObject):
 
     @QtCore.Slot(bool)
     def setActive(self, active: bool):
+        """
+        If the camera is available, change the active state and emits
+        :attr:`activeChanged` signal.
+
+        If active state is not changed, e.g. passing False to already stopped
+        camera, this method does nothing.
+        """
         if not self.isAvailable():
             return
         runner = VimbaRunner()
@@ -119,14 +166,25 @@ class VimbaCamera(QtCore.QObject):
 
     @QtCore.Slot()
     def start(self):
+        """
+        Starts the camera.
+
+        Same as :obj:`setActive(True) <setActive>`.
+        """
         self.setActive(True)
 
     @QtCore.Slot()
     def stop(self):
+        """
+        Stops the camera.
+
+        Same as :obj:`setActive(False) <setActive>`.
+        """
         self.setActive(False)
 
 
 class FrameProducer(QtCore.QThread):
+    """Internal thread for :class:`VimbaCamera` to fetch and queue the frames."""
 
     ready = QtCore.Signal()
 
@@ -162,6 +220,11 @@ class FrameProducer(QtCore.QThread):
 
 
 class FrameConsumer(QtCore.QObject):
+    """
+    Internal object for :class:`VimbaCamera` to pass the queued frames to
+    :class:`VimbaCaptureSession`.
+    """
+
     def __init__(self, queue: queue.Queue, parent=None):
         super().__init__(parent)
         self.queue = queue
