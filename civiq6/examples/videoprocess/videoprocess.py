@@ -7,18 +7,16 @@ from PySide6.QtCore import QObject, Signal, Slot, QThread, QEventLoop, Qt
 from PySide6.QtGui import QImage, QPixmap
 from PySide6.QtWidgets import QMainWindow, QLabel
 from qimage2ndarray import array2qimage
+import time
 from civiq6 import VimbaRunner, VimbaCamera, VimbaCaptureSession, ArraySink
 
 
 class ArrayProcessor(QObject):
     imageChanged = Signal(QImage)
 
-    @Slot(np.ndarray)
-    def setArray(self, array: np.ndarray):
-        self.imageChanged.emit(array2qimage(array))
-
     @Slot(QImage)
     def setImage(self, image: QImage):
+        time.sleep(0.05)  # represents long processing
         self.imageChanged.emit(image)
 
 
@@ -32,8 +30,10 @@ class ArrayProcessingSink(ArraySink):
         self.ready = True
 
     def setArray(self, array: np.ndarray):
+        # For unknown reason, sending ndarray by signal greatly lags the thread.
+        # Therefore we send image here.
         if self.ready:
-            # self.ready = False
+            self.ready = False
             super().setArray(array)
             self.imageChanged.emit(array2qimage(array))
 
@@ -64,7 +64,7 @@ class Window(QMainWindow):
 
         self.captureSession().setCamera(self.camera())
         self.captureSession().setArraySink(self.arraySink())
-        self.arraySink().arrayChanged.connect(self.arrayProcessor().setArray)
+        self.arraySink().imageChanged.connect(self.arrayProcessor().setImage)
         self.arrayProcessor().imageChanged.connect(self.setImageToLabel)
 
         self.arrayProcessor().moveToThread(self.processorThread())
