@@ -174,7 +174,7 @@ class FrameConsumer(QtCore.QObject):
             try:
                 # must keep reference of the frame
                 self.frame = self.queue.get_nowait()
-                cv_img = self.frame.as_opencv_image()
+                cv_img = self.frame.as_opencv_image().copy()
                 session = self.captureSession
                 if session is not None:
                     session.setArray(cv_img)
