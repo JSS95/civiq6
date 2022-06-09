@@ -8,7 +8,8 @@ import copy
 import queue
 from typing import Optional, TYPE_CHECKING
 import vimba  # type: ignore[import]
-from .devices import VimbaDevices, VimbaCameraDevice, VimbaRunner
+from .vimbarunner import VimbaRunner
+from .devices import VimbaDevices, VimbaCameraDevice
 from .dynqt6 import QtCore
 
 if TYPE_CHECKING:
