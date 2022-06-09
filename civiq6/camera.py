@@ -37,7 +37,7 @@ class VimbaCamera(QtCore.QObject):
         self._captureSession = None
         self._active = False
 
-        self._frameQueue: queue.Queue = queue.Queue(10)
+        self._frameQueue: queue.Queue = queue.Queue()
         self._frameProducer = FrameProducer(cameraDevice._Camera, self._frameQueue)
         self._waitProducerReady = QtCore.QEventLoop(self)
         self._frameConsumer = FrameConsumer(self._frameQueue)
@@ -174,7 +174,7 @@ class FrameConsumer(QtCore.QObject):
             try:
                 # must keep reference of the frame
                 self.frame = self.queue.get_nowait()
-                cv_img = self.frame.as_opencv_image()
+                cv_img = self.frame.as_opencv_image().copy()
                 session = self.captureSession
                 if session is not None:
                     session.setArray(cv_img)
