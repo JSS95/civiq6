@@ -10,7 +10,7 @@ import enum
 import numpy as np
 import numpy.typing as npt
 import os
-from qimage2ndarray import array2qimage
+from qimage2ndarray import array2qimage  # type: ignore[import]
 from typing import Optional, List
 import vimba  # type: ignore[import]
 from .camera import VimbaCamera
