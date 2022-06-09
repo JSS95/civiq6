@@ -162,9 +162,11 @@ class ArraySink(QtCore.QObject):
         self._arraySize = QtCore.QSize(-1, -1)
 
     def array(self) -> npt.NDArray[np.uint8]:
+        """Returns the current array."""
         return self._array
 
     def arraySize(self) -> QtCore.QSize:
+        """Returns the current array size."""
         return self._arraySize
 
     def setArray(self, array: npt.NDArray[np.uint8]):
