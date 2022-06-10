@@ -2,6 +2,9 @@
 Capturing with Vimba
 ====================
 
+:mod:`civiq6.capture` provides interface to acquire the frames from
+:class:`VimbaCamera` and to save them.
+
 """
 
 import cv2  # type: ignore[import]
@@ -30,6 +33,19 @@ VIMBA_LOGGER = vimba.Log.get_instance()
 
 
 class VimbaCaptureSession(QtCore.QObject):
+    """
+    Class to acquire the frames from :class:`VimbaCamera`.
+
+    This is the central class that manages capturing of the video from camera.
+
+    You can connect a camera to :class:`VimbaCaptureSession` using
+    :meth:`setCamera`. Video frames can be acquired by setting :class:`ArraySink`
+    using :meth:`setArraySink`.
+
+    You can capture still images by setting a :class:`VimbaImageCapture` object
+    on the capture session, and record video using a :class:`VimbaVideoRecorder`.
+
+    """
 
     cameraChanged = QtCore.Signal()
     imageCaptureChanged = QtCore.Signal()
@@ -43,18 +59,39 @@ class VimbaCaptureSession(QtCore.QObject):
         self._recorder = None
 
     def camera(self) -> Optional[VimbaCamera]:
+        """
+        The camera used to capture video.
+
+        Set the camera with :meth:`setCamera` to record video or to take images.
+        """
         return self._camera
 
     def arraySink(self) -> Optional["ArraySink"]:
+        """
+        Object to receive the video frame as numpy array and emit as `QImage`.
+
+        Set the array sink with :meth:`setArraySink` to acquire the frames.
+        """
         return self._arraySink
 
     def imageCapture(self) -> Optional["VimbaImageCapture"]:
+        """
+        Object to capture still images.
+
+        Set the image capture with :meth:`setImageCapture` to capture images.
+        """
         return self._imageCapture
 
     def recorder(self) -> Optional["VimbaVideoRecorder"]:
+        """
+        The recorder object used to capture video.
+
+        Set the recorder with :meth:`setRecorder` to capture video.
+        """
         return self._recorder
 
     def setCamera(self, camera: Optional[VimbaCamera]):
+        """Set the new camera and emit :attr:`cameraChanged` signal."""
         old_camera = self.camera()
         if old_camera is not None:
             old_camera._removeCaptureSession()
@@ -64,9 +101,13 @@ class VimbaCaptureSession(QtCore.QObject):
         self.cameraChanged.emit()
 
     def setArraySink(self, sink: Optional["ArraySink"]):
+        """Set the new array sink."""
         self._arraySink = sink
 
     def setImageCapture(self, imageCapture: Optional["VimbaImageCapture"]):
+        """
+        Set the new image capture and emit :attr:`imageCaptureChanged` signal.
+        """
         old_cap = self.imageCapture()
         if old_cap is not None:
             old_cap._captureSession = None
@@ -76,6 +117,7 @@ class VimbaCaptureSession(QtCore.QObject):
         self.imageCaptureChanged.emit()
 
     def setRecorder(self, recorder: Optional["VimbaVideoRecorder"]):
+        """Set the new recorder and emit :attr:`recorderChanged` signal."""
         old_rec = self.recorder()
         if old_rec is not None:
             old_rec._captureSession = None
@@ -84,7 +126,8 @@ class VimbaCaptureSession(QtCore.QObject):
             recorder._captureSession = self
         self.recorderChanged.emit()
 
-    def setArray(self, array: npt.NDArray[np.uint8]):
+    def _setArray(self, array: npt.NDArray[np.uint8]):
+        """Internal method used by :class:`VimbaCamera` to pass frame array."""
         sink = self.arraySink()
         if sink is not None:
             sink.setArray(array)
@@ -119,9 +162,11 @@ class ArraySink(QtCore.QObject):
         self._arraySize = QtCore.QSize(-1, -1)
 
     def array(self) -> npt.NDArray[np.uint8]:
+        """Returns the current array."""
         return self._array
 
     def arraySize(self) -> QtCore.QSize:
+        """Returns the current array size."""
         return self._arraySize
 
     def setArray(self, array: npt.NDArray[np.uint8]):
@@ -145,16 +190,36 @@ class ArraySink(QtCore.QObject):
 
 
 class VimbaImageCapture(QtCore.QObject):
+    """
+    Class to capture still images from the camera.
+
+    This class is a high level images recording class, intended to be used with
+    :class:`VimbaCaptureSession`.
+
+    .. code:: python
+
+       camera = VimbaCamera()
+       captureSession = VimbaCaptureSession()
+       imageCapture = VimbaImageCapture()
+       captureSession.setCamera(camera)
+       captureSession.setImageCapture(imageCapture)
+       camera.start()
+       imageCapture.capture()
+
+    """
 
     fileFormatChanged = QtCore.Signal()
     imageSaved = QtCore.Signal(int, str)
 
     class FileFormat(enum.IntEnum):
+        """Enumerates the image file formats."""
+
         JPEG = 1
         PNG = 2
 
     @classmethod
     def supportedFormats(cls) -> List[FileFormat]:
+        """Returns the list of supported image file formats."""
         return list(cls.FileFormat)
 
     @classmethod
@@ -197,17 +262,34 @@ class VimbaImageCapture(QtCore.QObject):
         self._capturing = False
 
     def captureSession(self) -> Optional[VimbaCaptureSession]:
+        """
+        Returns the capture session that provides the video frames, or `None` if
+        not connected to a capture session.
+
+        Use :meth:`VimbaCaptureSession.setImageCapture` to connect the image
+        capture to a session.
+        """
         return self._captureSession
 
     def fileFormat(self) -> FileFormat:
+        """Image file format that still images will be saved as."""
         return self._fileFormat
 
     def setFileFormat(self, fileFormat: FileFormat):
+        """Set :meth:`fileFormat` and emit :attr:`fileFormatChanged` signal."""
         self._fileFormat = fileFormat
         self.fileFormatChanged.emit()
 
     @QtCore.Slot(str)
     def captureToFile(self, location: str = "") -> int:
+        """
+        Capture the image, save it to file, and return id of the captured image.
+
+        *location* is the path to the file without extension. File format and
+        extension are determined by :meth:`fileFormat`.
+
+        Captured image id and path are emitted by :attr:`imageSaved` signal.
+        """
         if self.captureSession() is None or self._image is None:
             return -1
         self._capturing = True
@@ -224,12 +306,15 @@ class VimbaImageCapture(QtCore.QObject):
         return ret
 
     def _setArray(self, array: npt.NDArray[np.uint8]):
+        """Internal method for :class:`VimbaCaptureSession` to provide frames."""
         if not self._capturing:
             self._image = array
 
 
 @dataclasses.dataclass(frozen=True)
 class VideoCaptureFormat:
+    """Wraps video container extension and codec FourCC data."""
+
     extension: str = ""
     fourcc: str = ""
 
@@ -256,34 +341,64 @@ class VimbaVideoRecorder(QtCore.QObject):
         self._outputLocation = QtCore.QUrl()
         self._actualLocation = QtCore.QUrl()
         self._mediaFormat = VideoCaptureFormat("mp4", "mp4v")
-        self._frameRate = -1.0
-        self._resolution = QtCore.QSize(-1, -1)
+        self._frameRate = 0.0
+        self._resolution = QtCore.QSize()
         self._recorderState = self.StoppedState
 
         self._writer = None
 
     def captureSession(self) -> Optional[VimbaCaptureSession]:
+        """Object which provides frames to be recorded."""
         return self._captureSession
 
     def outputLocation(self) -> QtCore.QUrl:
+        """Destination location to record the video."""
         return self._outputLocation
 
     def actualLocation(self) -> QtCore.QUrl:
+        """
+        Actual location of the last recorded video.
+
+        The actual location is set after recording starts.
+        """
         return self._actualLocation
 
     def mediaFormat(self) -> VideoCaptureFormat:
         return self._mediaFormat
 
     def videoFrameRate(self) -> float:
+        """
+        Returns the video frame rate.
+
+        Non-positive value indicates that the recorder should use the frame rate
+        of the camera device.
+        """
         return self._frameRate
 
     def videoResolution(self) -> QtCore.QSize:
+        """
+        Returns the video resolution.
+
+        Empty ``QSize`` indicates that the recorder should use the resolution
+        of the camera device.
+        """
         return self._resolution
 
     def recorderState(self) -> RecorderState:
+        """
+        Current state of the media recorder.
+
+        This value changes synchronously during :meth:`record`, :meth:`pause` or
+        :meth:`stop` calls.
+        """
         return self._recorderState
 
     def setOutputLocation(self, location: QtCore.QUrl):
+        """
+        Set :meth:`outputLocation`.
+
+        The location should not include video format.
+        """
         self._outputLocation = location
 
     def setMediaFormat(self, f: VideoCaptureFormat):
@@ -300,6 +415,12 @@ class VimbaVideoRecorder(QtCore.QObject):
 
     @QtCore.Slot()
     def record(self):
+        """
+        Start recording.
+
+        While the recorder state is changed immediately to
+        :attr:`RecorderState.RecordingState`, recording may start asynchronously.
+        """
         if self.recorderState() == self.StoppedState:
             session = self.captureSession()
             if session is None:
@@ -314,9 +435,9 @@ class VimbaVideoRecorder(QtCore.QObject):
             fourcc = cv2.VideoWriter_fourcc(*mediaFormat.fourcc)
 
             fps = self.videoFrameRate()
-            if fps < 0:
+            if fps <= 0:
                 fps = camera.cameraDevice().frameRate()
-                if fps < 0:
+                if fps <= 0:
                     return
 
             size = self.videoResolution().toTuple()
@@ -356,6 +477,11 @@ class VimbaVideoRecorder(QtCore.QObject):
 
     @QtCore.Slot()
     def pause(self):
+        """
+        Pause recording.
+
+        The recorder state is changed to :attr:`RecorderState.PausedState`.
+        """
         if self.recorderState() == self.RecordingState:
             self._recorderState = self.PausedState
             self.recorderStateChanged.emit(self.recorderState())
@@ -363,6 +489,11 @@ class VimbaVideoRecorder(QtCore.QObject):
 
     @QtCore.Slot()
     def stop(self):
+        """
+        Stop recording and save the video.
+
+        The recorder state is changed to :attr:`RecorderState.StoppedState`.
+        """
         if self.recorderState() != self.StoppedState:
             self._recorderState = self.StoppedState
             self._writer.release()
@@ -371,5 +502,6 @@ class VimbaVideoRecorder(QtCore.QObject):
             VIMBA_LOGGER.info(f"Finished recording {self.actualLocation()}")
 
     def _setArray(self, array: npt.NDArray[np.uint8]):
+        """Internal method for :class:`VimbaCaptureSession` to provide frames."""
         if self.recorderState() is self.RecordingState:
             self._writer.write(array)

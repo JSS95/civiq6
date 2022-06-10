@@ -2,6 +2,9 @@
 Vimba camera device
 ===================
 
+:mod:`civiq6.devices` provides classes to manage physical cameras controlled by
+Vimba.
+
 """
 
 from typing import Optional, List
@@ -16,6 +19,17 @@ __all__ = [
 
 
 class VimbaDevices(QtCore.QObject):
+    """
+    Class to provide information about available camera devices.
+
+    :class:`VimbaDevices` provides a list of connected camera devices by
+    :meth:`videoInputs`. Change is notified by :attr:`videoInputsChanged` signal.
+
+    :class:`VimbaDevices` is a singleton object, and :class:`VimbaRunner` must be
+    run first.
+
+    """
+
     videoInputsChanged = QtCore.Signal()
 
     def __new__(cls, parent=None):
@@ -50,6 +64,44 @@ class VimbaDevices(QtCore.QObject):
 
 
 class VimbaCameraDevice(QtCore.QObject):
+    """
+    Class to provide general information about camera device.
+
+    :class:`VimbaCameraDevice` represents a physical camera device managed by
+    Vimba, and its properties.
+
+    Camera device can be discovered by :class:`VimbaDevices` class.
+
+    This example prints the name of all available cameras:
+
+    .. code:: python
+
+       cameras = VimbaDevices.videoInputs()
+       for cameraDevice in cameras:
+           print(cameraDevice.description())
+
+    A :class:`VimbaCameraDevice` can be used to construct a :class:`VimbaCamera`.
+    The following example instantiates a :class:`VimbaCamera` whos camera device
+    is named ``mycamera``:
+
+    .. code:: python
+
+       cameras = VimbaDevices.videoInputs()
+       for cameraDevice in cameras:
+           if (cameraDevice.description() == "mycamera")
+               camera = VimbaCamera(cameraDevice)
+
+    You can also use :class:`VimbaCameraDevice` to get general information about
+    a camera device such as frame rate, resolution or pixel format.
+
+    .. code:: python
+
+       device = VimbaDevices.defaultVideoInput()
+       print(device.frameRate())
+       print(device.resolution())
+
+    """
+
     @classmethod
     def fromCamera(cls, camera: vimba.Camera):
         obj = cls()
@@ -70,9 +122,16 @@ class VimbaCameraDevice(QtCore.QObject):
             self._desc = other._desc
 
     def __eq__(self, other):
+        """
+        Returns true if this :class:`VimbaCameraDevice` is equal to `other`.
+        """
         return type(self) == type(other) and self._Camera == other._Camera
 
     def __ne__(self, other):
+        """
+        Returns true if this :class:`VimbaCameraDevice` is different from
+        `other`.
+        """
         return type(self) != type(other) or self._Camera != other._Camera
 
     def id(self) -> QtCore.QByteArray:
@@ -82,12 +141,17 @@ class VimbaCameraDevice(QtCore.QObject):
         return self._desc
 
     def isNull(self) -> bool:
+        """Returns true if this :class:`VimbaCameraDevice` is null or invalid."""
         return self._Camera is None
 
     def isDefault(self) -> bool:
         return self == VimbaDevices().defaultVideoInput()
 
     def frameRate(self) -> float:
+        """
+        Return the acquisition frame rate of camera device.
+        -1 indicates invalid device.
+        """
         camera = self._Camera
         if camera is None:
             ret = -1
@@ -97,6 +161,10 @@ class VimbaCameraDevice(QtCore.QObject):
         return ret
 
     def resolution(self) -> QtCore.QSize:
+        """
+        Return the resoultion of camera device.
+        ``QSize(-1, -1)`` indicates invalid device.
+        """
         camera = self._Camera
         if camera is None:
             w, h = -1, -1
@@ -107,6 +175,10 @@ class VimbaCameraDevice(QtCore.QObject):
         return QtCore.QSize(w, h)
 
     def pixelFormat(self) -> Optional[vimba.PixelFormat]:
+        """
+        Return the pixel format of camera device.
+        ``None`` indicates invalid device.
+        """
         camera = self._Camera
         if camera is None:
             ret = None
