@@ -17,7 +17,7 @@ CIViQ6 must be imported **after** the Qt package is imported.
 .. code:: python
 
    import PySide6
-   import civiq6 as avq
+   import civiq6 as cvq
 
 Before accessing the camera API, :class:`VimbaRunner` must be run to start the Vimba instance.
 After then, user can acquire and save the frames from the camera in a similar way to Qt6.
