@@ -312,6 +312,7 @@ class VimbaImageCapture(QtCore.QObject):
 
 @dataclasses.dataclass(frozen=True)
 class VideoCaptureFormat:
+    """Wraps video container extension and codec FourCC data."""
     extension: str = ""
     fourcc: str = ""
 
@@ -338,34 +339,64 @@ class VimbaVideoRecorder(QtCore.QObject):
         self._outputLocation = QtCore.QUrl()
         self._actualLocation = QtCore.QUrl()
         self._mediaFormat = VideoCaptureFormat("mp4", "mp4v")
-        self._frameRate = -1.0
-        self._resolution = QtCore.QSize(-1, -1)
+        self._frameRate = 0.0
+        self._resolution = QtCore.QSize()
         self._recorderState = self.StoppedState
 
         self._writer = None
 
     def captureSession(self) -> Optional[VimbaCaptureSession]:
+        """Object which provides frames to be recorded."""
         return self._captureSession
 
     def outputLocation(self) -> QtCore.QUrl:
+        """Destination location to record the video."""
         return self._outputLocation
 
     def actualLocation(self) -> QtCore.QUrl:
+        """
+        Actual location of the last recorded video.
+
+        The actual location is set after recording starts.
+        """
         return self._actualLocation
 
     def mediaFormat(self) -> VideoCaptureFormat:
         return self._mediaFormat
 
     def videoFrameRate(self) -> float:
+        """
+        Returns the video frame rate.
+
+        Non-positive value indicates that the recorder should use the frame rate
+        of the camera device.
+        """
         return self._frameRate
 
     def videoResolution(self) -> QtCore.QSize:
+        """
+        Returns the video resolution.
+
+        Empty ``QSize`` indicates that the recorder should use the resolution
+        of the camera device.
+        """
         return self._resolution
 
     def recorderState(self) -> RecorderState:
+        """
+        Current state of the media recorder.
+
+        This value changes synchronously during :meth:`record`, :meth:`pause` or
+        :meth:`stop` calls.
+        """
         return self._recorderState
 
     def setOutputLocation(self, location: QtCore.QUrl):
+        """
+        Set :meth:`outputLocation`.
+
+        The location should not include video format.
+        """
         self._outputLocation = location
 
     def setMediaFormat(self, f: VideoCaptureFormat):
@@ -382,6 +413,12 @@ class VimbaVideoRecorder(QtCore.QObject):
 
     @QtCore.Slot()
     def record(self):
+        """
+        Start recording.
+
+        While the recorder state is changed immediately to
+        :attr:`RecorderState.RecordingState`, recording may start asynchronously.
+        """
         if self.recorderState() == self.StoppedState:
             session = self.captureSession()
             if session is None:
@@ -396,9 +433,9 @@ class VimbaVideoRecorder(QtCore.QObject):
             fourcc = cv2.VideoWriter_fourcc(*mediaFormat.fourcc)
 
             fps = self.videoFrameRate()
-            if fps < 0:
+            if fps =< 0:
                 fps = camera.cameraDevice().frameRate()
-                if fps < 0:
+                if fps =< 0:
                     return
 
             size = self.videoResolution().toTuple()
@@ -438,6 +475,11 @@ class VimbaVideoRecorder(QtCore.QObject):
 
     @QtCore.Slot()
     def pause(self):
+        """
+        Pause recording.
+
+        The recorder state is changed to :attr:`RecorderState.PausedState`.
+        """
         if self.recorderState() == self.RecordingState:
             self._recorderState = self.PausedState
             self.recorderStateChanged.emit(self.recorderState())
@@ -445,6 +487,11 @@ class VimbaVideoRecorder(QtCore.QObject):
 
     @QtCore.Slot()
     def stop(self):
+        """
+        Stop recording and save the video.
+
+        The recorder state is changed to :attr:`RecorderState.StoppedState`.
+        """
         if self.recorderState() != self.StoppedState:
             self._recorderState = self.StoppedState
             self._writer.release()
@@ -453,5 +500,6 @@ class VimbaVideoRecorder(QtCore.QObject):
             VIMBA_LOGGER.info(f"Finished recording {self.actualLocation()}")
 
     def _setArray(self, array: npt.NDArray[np.uint8]):
+        """Internal method for :class:`VimbaCaptureSession` to provide frames."""
         if self.recorderState() is self.RecordingState:
             self._writer.write(array)
