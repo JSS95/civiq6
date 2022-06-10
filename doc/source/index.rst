@@ -13,6 +13,7 @@ This is the central page for all documents.
    :caption: Contents:
 
    API reference <reference/index>
+   Examples <examples/index>
 
 Indices and tables
 ==================
