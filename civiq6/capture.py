@@ -213,6 +213,7 @@ class VimbaImageCapture(QtCore.QObject):
 
     class FileFormat(enum.IntEnum):
         """Enumerates the image file formats."""
+
         JPEG = 1
         PNG = 2
 
@@ -313,6 +314,7 @@ class VimbaImageCapture(QtCore.QObject):
 @dataclasses.dataclass(frozen=True)
 class VideoCaptureFormat:
     """Wraps video container extension and codec FourCC data."""
+
     extension: str = ""
     fourcc: str = ""
 
@@ -433,9 +435,9 @@ class VimbaVideoRecorder(QtCore.QObject):
             fourcc = cv2.VideoWriter_fourcc(*mediaFormat.fourcc)
 
             fps = self.videoFrameRate()
-            if fps =< 0:
+            if fps <= 0:
                 fps = camera.cameraDevice().frameRate()
-                if fps =< 0:
+                if fps <= 0:
                     return
 
             size = self.videoResolution().toTuple()
