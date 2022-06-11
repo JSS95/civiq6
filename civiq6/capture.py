@@ -469,11 +469,15 @@ class VimbaVideoRecorder(QtCore.QObject):
             self._actualLocation = QtCore.QUrl.fromLocalFile(path)
             self.actualLocationChanged.emit()
             self.recorderStateChanged.emit(self.recorderState())
-            VIMBA_LOGGER.info(f"Started recording {self.actualLocation().toLocalFile()}")
+            VIMBA_LOGGER.info(
+                f"Started recording {self.actualLocation().toLocalFile()}"
+            )
         elif self.recorderState() == self.PausedState:
             self._recorderState = self.RecordingState
             self.recorderStateChanged.emit(self.recorderState())
-            VIMBA_LOGGER.info(f"Resumed recording {self.actualLocation().toLocalFile()}")
+            VIMBA_LOGGER.info(
+                f"Resumed recording {self.actualLocation().toLocalFile()}"
+            )
 
     @QtCore.Slot()
     def pause(self):
@@ -499,7 +503,9 @@ class VimbaVideoRecorder(QtCore.QObject):
             self._writer.release()
             self._writer = None
             self.recorderStateChanged.emit(self.recorderState())
-            VIMBA_LOGGER.info(f"Finished recording {self.actualLocation().toLocalFile()}")
+            VIMBA_LOGGER.info(
+                f"Finished recording {self.actualLocation().toLocalFile()}"
+            )
 
     def _setArray(self, array: npt.NDArray[np.uint8]):
         """Internal method for :class:`VimbaCaptureSession` to provide frames."""
