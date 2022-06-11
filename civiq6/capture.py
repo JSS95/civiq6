@@ -179,7 +179,11 @@ class ArraySink(QtCore.QObject):
         in the same thread with the capture session.
         """
         self._array = array
-        self.imageChanged.emit(array2qimage(array))
+        if array.size == 0:
+            img = QtGui.QImage()
+        else:
+            img = array2qimage(array)
+        self.imageChanged.emit(img)
 
         oldsize = self.arraySize()
         h, w = array.shape[:2]
