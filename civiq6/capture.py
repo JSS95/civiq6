@@ -350,6 +350,7 @@ class VimbaVideoRecorder(QtCore.QObject):
         self._recorderState = self.StoppedState
 
         self._writer = None
+        self._writer_lock = QMutex()
 
     def captureSession(self) -> Optional[VimbaCaptureSession]:
         """Object which provides frames to be recorded."""
@@ -467,7 +468,9 @@ class VimbaVideoRecorder(QtCore.QObject):
             else:
                 isColor = True
 
+            self._writer_lock.lock()
             self._writer = cv2.VideoWriter(path, fourcc, fps, size, isColor)
+            self._writer_lock.unlock()
             self._recorderState = self.RecordingState
 
             self._actualLocation = QtCore.QUrl.fromLocalFile(path)
@@ -504,8 +507,10 @@ class VimbaVideoRecorder(QtCore.QObject):
         """
         if self.recorderState() != self.StoppedState:
             self._recorderState = self.StoppedState
+            self._writer_lock.lock()
             self._writer.release()
             self._writer = None
+            self._writer_lock.unlock()
             self.recorderStateChanged.emit(self.recorderState())
             VIMBA_LOGGER.info(
                 f"Finished recording {self.actualLocation().toLocalFile()}"
@@ -514,4 +519,7 @@ class VimbaVideoRecorder(QtCore.QObject):
     def _setArray(self, array: npt.NDArray[np.uint8]):
         """Internal method for :class:`VimbaCaptureSession` to provide frames."""
         if self.recorderState() is self.RecordingState:
-            self._writer.write(array)
+            acquired = self._writer_lock.tryLock()
+            if acquired:
+                self._writer.write(array)
+                self._writer_lock.unlock()
