@@ -519,7 +519,6 @@ class VimbaVideoRecorder(QtCore.QObject):
     def _setArray(self, array: npt.NDArray[np.uint8]):
         """Internal method for :class:`VimbaCaptureSession` to provide frames."""
         if self.recorderState() is self.RecordingState:
-            acquired = self._writer_lock.tryLock()
-            if acquired:
-                self._writer.write(array)
-                self._writer_lock.unlock()
+            self._writer_lock.lock()
+            self._writer.write(array)
+            self._writer_lock.unlock()
