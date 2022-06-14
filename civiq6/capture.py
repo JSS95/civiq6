@@ -350,7 +350,7 @@ class VimbaVideoRecorder(QtCore.QObject):
         self._recorderState = self.StoppedState
 
         self._writer = None
-        self._writer_lock = QMutex()
+        self._writer_lock = QtCore.QMutex()
 
     def captureSession(self) -> Optional[VimbaCaptureSession]:
         """Object which provides frames to be recorded."""
