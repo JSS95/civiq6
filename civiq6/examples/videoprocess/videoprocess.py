@@ -48,68 +48,44 @@ class Window(QMainWindow):
         self._vimbaThread = QThread()
         self._vimbaRunner = VimbaRunner()
         self._waitVimba = QEventLoop(self)
-        self.vimbaRunner().moveToThread(self.vimbaThread())
-        self.vimbaThread().started.connect(self.vimbaRunner().runVimba)
-        self.vimbaRunner().vimbaReady.connect(self._waitVimba.quit)
-        self.vimbaThread().start()
+        self._vimbaRunner.moveToThread(self._vimbaThread)
+        self._vimbaThread.started.connect(self._vimbaRunner.runVimba)
+        self._vimbaRunner.vimbaReady.connect(self._waitVimba.quit)
+        self._vimbaThread.start()
         self._waitVimba.exec()
 
         self._camera = VimbaCamera()
-        self._capture_session = VimbaCaptureSession()
-        self._array_sink = ArrayProcessingSink()
+        self._captureSession = VimbaCaptureSession()
+        self._arraySink = ArrayProcessingSink()
         self._processorThread = QThread()
-        self._array_processor = BlurringProcessor()
+        self._arrayProcessor = BlurringProcessor()
         self._label = QLabel()
 
-        self.captureSession().setCamera(self.camera())
-        self.captureSession().setArraySink(self.arraySink())
-        self.arraySink().imageChanged.connect(self.blurringProcessor().setImage)
-        self.blurringProcessor().imageChanged.connect(self.setImageToLabel)
+        self._captureSession.setCamera(self._camera)
+        self._captureSession.setArraySink(self._arraySink)
+        self._arraySink.imageChanged.connect(self._arrayProcessor.setImage)
+        self._arrayProcessor.imageChanged.connect(self.setImageToLabel)
 
-        self.blurringProcessor().moveToThread(self.processorThread())
-        self.processorThread().start()
+        self._arrayProcessor.moveToThread(self._processorThread)
+        self._processorThread.start()
 
-        self.label().setAlignment(Qt.AlignCenter)
-        self.setCentralWidget(self.label())
+        self._label.setAlignment(Qt.AlignCenter)
+        self.setCentralWidget(self._label)
 
         # start camera
-        self.camera().start()
-
-    def vimbaThread(self) -> QThread:
-        return self._vimbaThread
-
-    def vimbaRunner(self) -> VimbaRunner:
-        return self._vimbaRunner
-
-    def camera(self) -> VimbaCamera:
-        return self._camera
-
-    def captureSession(self) -> VimbaCaptureSession:
-        return self._capture_session
-
-    def arraySink(self) -> ArrayProcessingSink:
-        return self._array_sink
-
-    def processorThread(self) -> QThread:
-        return self._processorThread
-
-    def blurringProcessor(self) -> BlurringProcessor:
-        return self._array_processor
-
-    def label(self) -> QLabel:
-        return self._label
+        self._camera.start()
 
     @Slot(QImage)
     def setImageToLabel(self, image: QImage):
-        self.label().setPixmap(QPixmap.fromImage(image))
-        self.arraySink().setReady()
+        self._label.setPixmap(QPixmap.fromImage(image))
+        self._arraySink.setReady()
 
     def closeEvent(self, event):
-        self.processorThread().quit()
-        self.vimbaRunner().stopVimba()
-        self.vimbaThread().quit()
-        self.processorThread().wait()
-        self.vimbaThread().wait()
+        self._vimbaRunner.stopVimba()
+        self._vimbaThread.quit()
+        self._vimbaThread.wait()
+        self._processorThread.quit()
+        self._processorThread.wait()
         super().closeEvent(event)
 
 
