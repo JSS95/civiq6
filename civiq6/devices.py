@@ -9,7 +9,7 @@ Vimba.
 
 from typing import Optional, List
 import vimba  # type: ignore[import]
-from .dynqt6 import QtCore
+from .qt_compat import QtCore
 
 
 __all__ = [

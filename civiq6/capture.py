@@ -17,7 +17,7 @@ from qimage2ndarray import array2qimage  # type: ignore[import]
 from typing import Optional, List
 import vimba  # type: ignore[import]
 from .camera import VimbaCamera
-from .dynqt6 import QtCore, QtGui
+from .qt_compat import QtCore, QtGui
 
 
 __all__ = [

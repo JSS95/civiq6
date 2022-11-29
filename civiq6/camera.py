@@ -15,7 +15,7 @@ from typing import Optional, TYPE_CHECKING
 import vimba  # type: ignore[import]
 from .vimbarunner import VimbaRunner
 from .devices import VimbaDevices, VimbaCameraDevice
-from .dynqt6 import QtCore
+from .qt_compat import QtCore
 
 if TYPE_CHECKING:
     from .capture import VimbaCaptureSession
