@@ -8,7 +8,7 @@ Vimba instance
 
 from typing import List, TYPE_CHECKING
 import vimba  # type: ignore[import]
-from .dynqt6 import QtCore
+from .qt_compat import QtCore
 
 if TYPE_CHECKING:
     from .camera import VimbaCamera
