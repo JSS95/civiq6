@@ -58,15 +58,15 @@ class Window(QMainWindow):
         self._captureSession = VimbaCaptureSession()
         self._arraySink = ArrayProcessingSink()
         self._processorThread = QThread()
-        self._arrayProcessor = BlurringProcessor()
+        self._imageProcessor = BlurringProcessor()
         self._label = QLabel()
 
         self._captureSession.setCamera(self._camera)
         self._captureSession.setArraySink(self._arraySink)
-        self._arraySink.imageChanged.connect(self._arrayProcessor.setImage)
-        self._arrayProcessor.imageChanged.connect(self.setImageToLabel)
+        self._arraySink.imageChanged.connect(self._imageProcessor.setImage)
+        self._imageProcessor.imageChanged.connect(self.setImageToLabel)
 
-        self._arrayProcessor.moveToThread(self._processorThread)
+        self._imageProcessor.moveToThread(self._processorThread)
         self._processorThread.start()
 
         self._label.setAlignment(Qt.AlignCenter)
