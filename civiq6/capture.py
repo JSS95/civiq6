@@ -13,7 +13,7 @@ import enum
 import numpy as np
 import numpy.typing as npt
 import os
-from qimage2ndarray import array2qimage  # type: ignore[import]
+import qimage2ndarray  # type: ignore[import]
 from typing import Optional, List
 import vimba  # type: ignore[import]
 from .camera import VimbaCamera
@@ -27,6 +27,13 @@ __all__ = [
     "VideoCaptureFormat",
     "VimbaVideoRecorder",
 ]
+
+
+# Monkeypatch qimage2ndarray until new version (> 1.9.0)
+# https://github.com/hmeine/qimage2ndarray/issues/29
+for name, qimage_format in qimage2ndarray.qimageview_python.FORMATS.items():
+    if name in dir(QtGui.QImage.Format):
+        qimage_format.code = getattr(QtGui.QImage, name)
 
 
 VIMBA_LOGGER = vimba.Log.get_instance()
@@ -182,7 +189,7 @@ class ArraySink(QtCore.QObject):
         if array.size == 0:
             img = QtGui.QImage()
         else:
-            img = array2qimage(array)
+            img = qimage2ndarray.array2qimage(array)
         self.imageChanged.emit(img)
 
         oldsize = self.arraySize()
