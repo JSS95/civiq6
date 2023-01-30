@@ -5,6 +5,12 @@ Vimba camera device
 :mod:`civiq6.devices` provides classes to manage physical cameras controlled by
 Vimba.
 
+.. autoclass:: VimbaDevices
+   :members:
+
+.. autoclass:: VimbaCameraDevice
+   :members:
+
 """
 
 from typing import Optional, List
