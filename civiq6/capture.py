@@ -5,6 +5,21 @@ Capturing with Vimba
 :mod:`civiq6.capture` provides interface to acquire the frames from
 :class:`VimbaCamera` and to save them.
 
+.. autoclass:: VimbaCaptureSession
+   :members:
+
+.. autoclass:: ArraySink
+   :members:
+
+.. autoclass:: VimbaImageCapture
+   :members:
+
+.. autoclass:: VideoCaptureFormat
+   :members:
+
+.. autoclass:: VimbaVideoRecorder
+   :members:
+
 """
 
 import cv2  # type: ignore[import]

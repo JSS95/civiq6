@@ -7,6 +7,12 @@ Vimba camera interface
 .. autoclass:: VimbaCamera
    :members:
 
+.. autoclass:: FrameProducer
+   :members:
+
+.. autoclass:: FrameConsumer
+   :members:
+
 """
 
 import copy

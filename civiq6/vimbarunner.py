@@ -4,6 +4,9 @@ Vimba instance
 
 :mod:`civiq6.vimbarunner` provides a class to start the Vimba instance.
 
+.. autoclass:: VimbaRunner
+   :members:
+
 """
 
 from typing import List, TYPE_CHECKING
