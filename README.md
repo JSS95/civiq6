@@ -6,26 +6,13 @@
 [![Documentation Status](https://readthedocs.org/projects/civiq6/badge/?version=latest)](https://civiq6.readthedocs.io/en/latest/?badge=latest)
 [![License](https://img.shields.io/github/license/JSS95/civiq6)](https://github.com/JSS95/civiq6/blob/master/LICENSE)
 
-Python package for camera integration of [VimbaPython](https://github.com/alliedvision/VimbaPython) and Qt6.
+CIViQ6 is a Python package which integrates [VimbaPython](https://github.com/alliedvision/VimbaPython) and Qt6 multimedia scheme.
 
-CIViQ is designed to be used with either [PySide6](https://pypi.org/project/PySide6/) or [PyQt6](https://pypi.org/project/PyQt6/).
-However, PyQt6 is not available until the dependent package, [qimage2ndarray](https://pypi.org/project/qimage2ndarray/), supports it.
+The following Qt bindings are supported:
+- [PySide6](https://pypi.org/project/PySide6/)
+- [PyQt6](https://pypi.org/project/PyQt6/)
 
-This package is tested with Vimba 6.0, VimbaPython 1.2.1, and Mako U-130B camera device connected to Window 11.
-
-# Installation
-
-Before you install, be careful for other Qt-dependent packages installed in your environment.
-For example, non-headless `OpenCV-Python` modifies the Qt dependency thus can make other Qt bindings unavailable.
-
-To install CIViQ6, you first need to install VimbaPython package which is not distributed by PyPI.
-Go to its repository and follow the instructions.
-
-After VimbaPython is installed, `civiq6` can be installed using `pip`.
-
-```
-$ pip install civiq6
-```
+This package is tested using Vimba 6.0, VimbaPython 1.2.1, and Mako U-130B camera device connected to the device with Window 11.
 
 # How to use
 
@@ -33,17 +20,17 @@ $ pip install civiq6
 
 After Vimba is started, you can access the vimba camera APIs and acquire frames.
 
-CIViQ is designed to be similar to Qt6's QtMultimedia framework:
+CIViQ6 is designed to be similar to Qt6's QtMultimedia framework:
 
-|       Qt class       |  CIViQ counterpart  |
-| -------------------- | ------------------- |
-|     QMediaDevices    |     VimbaDevices    |
-|     QCameraDevice    |  VimbaCameraDevice  |
-|       QCamera        |     VimbaCamera     |
-| QMediaCaptureSession | VimbaCaptureSession |
-|      QVideoSink      |      ArraySink      |
-|     QImageCapture    |  VimbaImageCapture  |
-|    QMediaRecorder    |  VimbaVideoRecorder |
+|       Qt class       |  CIViQ6 counterpart  |
+| -------------------- | -------------------- |
+|     QMediaDevices    |      VimbaDevices    |
+|     QCameraDevice    |   VimbaCameraDevice  |
+|       QCamera        |      VimbaCamera     |
+| QMediaCaptureSession |  VimbaCaptureSession |
+|      QVideoSink      |       ArraySink      |
+|     QImageCapture    |   VimbaImageCapture  |
+|    QMediaRecorder    |   VimbaVideoRecorder |
 
 For more information, refer to the documentation and examples.
 
@@ -52,17 +39,34 @@ For more information, refer to the documentation and examples.
 Use cases with multithreading are provided in [examples](https://github.com/JSS95/civiq6/tree/master/civiq6/examples) directory.
 They can be found in documentation as well.
 
+# Installation
+
+Before you install, be careful for other Qt-dependent packages installed in your environment.
+For example, non-headless `OpenCV-Python` modifies the Qt dependency thus can make other Qt bindings unavailable.
+
+To install CIViQ6, you first need to install [VimbaPython](https://github.com/alliedvision/VimbaPython) package which is not distributed by PyPI.
+Go to its repository and follow the instructions.
+
+After VimbaPython is installed, `civiq6` can be installed using `pip`.
+
+```
+$ pip install civiq6
+```
+
 # Documentation
 
+CIViQ6 is documented with [Sphinx](https://pypi.org/project/Sphinx/).
 Documentation can be found on Read the Docs:
 
 > https://civiq6.readthedocs.io/
 
 If you want to build the document yourself, clone the source code and install with `[doc]` option.
-Go to `doc` directory and build.
+Go to `doc` directory and build the document.
 
 ```
 $ pip install civiq6[doc]
 $ cd doc
 $ make html
 ```
+
+Document will be generated in `build/html` directory. Open `index.html` to see the central page.
