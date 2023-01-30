@@ -1,5 +1,9 @@
 Video streaming
 ===============
 
-.. include:: ../../../civiq6/examples/videostream/videostream.py
-   :code: python
+.. tabs::
+
+   .. tab:: PySide6
+
+      .. include:: ./PySide6/videostream.py
+         :code: python

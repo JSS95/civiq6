@@ -1,5 +1,9 @@
 Video processing
 ================
 
-.. include:: ../../../civiq6/examples/videoprocess/videoprocess.py
-   :code: python
+.. tabs::
+
+   .. tab:: PySide6
+
+      .. include:: ./PySide6/videoprocess.py
+         :code: python
