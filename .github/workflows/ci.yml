@@ -34,6 +34,12 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    strategy:
+      fail-fast: false
+
+      matrix:
+        qt: [PySide6, PyQt6]
+
     steps: 
 
       - name: get repo
@@ -42,10 +48,13 @@ jobs:
       - name: set up Python
         uses: actions/setup-python@v2
 
-      - name: install dependencies
+      - name: install qt
         run: |
-          pip install -r requirements/install.txt
-          pip install -r requirements/test.txt
+          pip install ${{ matrix.qt }}
+
+      - name: install package
+        run: |
+          pip install .[test]
 
       - name: run mypy check
         run: mypy civiq6
@@ -63,10 +72,6 @@ jobs:
 
       - name: set up Python
         uses: actions/setup-python@v2
-
-      - name: install dependencies
-        run: |
-          pip install -r requirements/doc.txt
 
       - name: install package
         run: |
