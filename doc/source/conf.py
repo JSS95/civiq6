@@ -16,7 +16,8 @@
 
 autodoc_mock_imports = [
     "vimba",
-    "PySide6",
+    "qimage2ndarray",
+    "civiq6.qt_compat",
 ]
 
 
