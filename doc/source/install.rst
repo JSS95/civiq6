@@ -18,8 +18,8 @@ The easiest way is to use `Anaconda <https://www.anaconda.com/>`_:
 You are now in a new environment "my-env", with only `pip <https://pip.pypa.io/en/stable/>`_ package installed.
 Ready to go!
 
-Downloading VimbaPython
-=======================
+Installing VimbaPython
+======================
 
 CIViQ is dependent to `VimbaPython <https://github.com/alliedvision/VimbaPython>`_ , which is not distributed by PyPI.
 Go to its repository and follow the instructions to install the package.
@@ -70,12 +70,6 @@ Available specifications for CIViQ6 are:
 * ``doc``: installs modules to build documentations
 * ``full``: installs every additional dependency
 
-Also, you may specify the Qt binding package dependency.
-These are not included in ``full`` because you cannot install both.
-
-* ``pyside6``: installs PySide6
-* ``pyqt6``: installs PyQt6
-
 With commas without trailing whitespaces, i.e. ``[A,B]``, you can pass multiple specifications.
 
 Installing from repository
@@ -107,3 +101,10 @@ For example, in the path where ``setup.py`` is located the following command ins
 .. code-block:: bash
 
    $ pip install -e .[full]
+
+Installing Qt binding
+=====================
+
+CIViQ6 needs Qt binding package installed in the environment, but it does not specify it as requirement.
+Install any one of the supported Qt binding listed in :ref:`intro` before using CIViQ6.
+
