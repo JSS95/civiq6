@@ -44,13 +44,6 @@ __all__ = [
 ]
 
 
-# Monkeypatch qimage2ndarray until new version (> 1.9.0)
-# https://github.com/hmeine/qimage2ndarray/issues/29
-for name, qimage_format in qimage2ndarray.qimageview_python.FORMATS.items():
-    if name in dir(QtGui.QImage.Format):
-        qimage_format.code = getattr(QtGui.QImage, name)
-
-
 VIMBA_LOGGER = vimba.Log.get_instance()
 
 

@@ -14,7 +14,11 @@
 # import sys
 # sys.path.insert(0, os.path.abspath('.'))
 
-autodoc_mock_imports = ["vimba", "PyQt5", "PySide6"]
+autodoc_mock_imports = [
+    "vimba",
+    "qimage2ndarray",
+    "civiq6.qt_compat",
+]
 
 
 # -- Project information -----------------------------------------------------
@@ -33,6 +37,7 @@ extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.intersphinx",
     "sphinx.ext.viewcode",
+    "sphinx_tabs.tabs",
     "numpydoc",
 ]
 
