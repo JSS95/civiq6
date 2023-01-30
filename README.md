@@ -1,4 +1,10 @@
-# CIViQ6
+# CIViQ6 - Camera Integration for Vimba and Qt6
+
+[![PyPI version](https://badge.fury.io/py/CIViQ6.svg)](https://badge.fury.io/py/CIViQ6)
+[![Python Version](https://img.shields.io/pypi/pyversions/civiq6)](https://pypi.org/project/civiq6/)
+[![Build Status](https://github.com/JSS95/civiq6/actions/workflows/ci.yml/badge.svg)](https://github.com/JSS95/civiq6/actions/workflows/ci.yml)
+[![Documentation Status](https://readthedocs.org/projects/civiq6/badge/?version=latest)](https://civiq6.readthedocs.io/en/latest/?badge=latest)
+[![License](https://img.shields.io/github/license/JSS95/civiq6)](https://github.com/JSS95/civiq6/blob/master/LICENSE)
 
 Python package for camera integration of [VimbaPython](https://github.com/alliedvision/VimbaPython) and Qt6.
 
