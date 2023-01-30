@@ -9,8 +9,8 @@ Qt6 Python bindings - :mod:`PyQt6` or :mod:`PySide6`.
 
 from .version import __version__  # noqa
 
-from .vimbarunner import VimbaRunner
 from .devices import (
+    VimbaRunner,
     VimbaDevices,
     VimbaCameraDevice,
 )

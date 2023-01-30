@@ -9,9 +9,8 @@ CIViQ6 Reference
 This manual describes the modules and objects in :mod:`civiq6`.
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
-   vimbarunner
    devices
    camera
    capture
