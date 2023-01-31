@@ -56,7 +56,7 @@ class VimbaRunner(QtCore.QObject):
        vimbaRunner.moveToThread(vimbaThread)
        vimbaThread.started.connect(vimbaRunner.runVimba)
        vimbaThread.start()
-    
+
     Once the Vimba instance is successfully started, :attr:`vimbaReady` signal is
     emitted.
 
@@ -128,7 +128,7 @@ class VimbaDevices(QtCore.QObject):
     :class:`VimbaDevices` provides access to the available camera devices.
     :meth:`videoInputs` returns a list of available devices, and
     :meth:`defaultVideoInput` returns a default device among them.
-    
+
     When a new devices has been connected or and attached device has
     been disconnected, the change is notified by :attr:`videoInputsChanged`
     signal.
