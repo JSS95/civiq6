@@ -283,6 +283,7 @@ class VimbaCameraFormat(QtCore.QObject):
     frame rate.
 
     """
+
     def __init__(self, other: Optional["VimbaCameraFormat"] = None):
         self._frameRate = -1.0
         self._pixelFormat = None
