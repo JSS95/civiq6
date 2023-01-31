@@ -7,7 +7,6 @@ Introduction
 .. currentmodule:: civiq6
 
 CIViQ6 is a Python package for camera integration of `VimbaPython <https://github.com/alliedvision/VimbaPython>`_ and Qt6.
-It is designed to help scientific programmers who want to quickly visualize the video without complicated framework.
 
 Supported Qt bindings
 =====================
