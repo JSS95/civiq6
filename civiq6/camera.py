@@ -7,10 +7,7 @@ Vimba camera interface
 .. autoclass:: VimbaCamera
    :members:
 
-.. autoclass:: FrameProducer
-   :members:
-
-.. autoclass:: FrameConsumer
+.. autoclass:: VimbaCameraFormat
    :members:
 
 """
@@ -30,6 +27,7 @@ __all__ = [
     "VimbaCamera",
     "FrameProducer",
     "FrameConsumer",
+    "VimbaCameraFormat",
 ]
 
 
@@ -83,6 +81,22 @@ class VimbaCamera(QtCore.QObject):
 
     def cameraDevice(self) -> VimbaCameraDevice:
         return self._cameraDevice
+
+    def cameraFormat(self) -> "VimbaCameraFormat":
+        """Returns the camera format currently used by the camera."""
+        ret = VimbaCameraFormat()
+        camera = self.cameraDevice()._Camera
+        if camera is not None:
+            with camera:
+                frameRate = camera.get_feature_by_name("AcquisitionFrameRate").get()
+                pixelFormat = camera.get_pixel_format()
+                w = camera.get_feature_by_name("Width").get()
+                h = camera.get_feature_by_name("Height").get()
+                resolution = QtCore.QSize(w, h)
+                ret._setFrameRate(frameRate)
+                ret._setPixelFormat(pixelFormat)
+                ret._setResolution(resolution)
+        return ret
 
     def captureSession(self) -> Optional["VimbaCaptureSession"]:
         """
@@ -258,3 +272,74 @@ class FrameConsumer(QtCore.QObject):
 
     def removeCaptureSession(self):
         self.captureSession = None
+
+
+class VimbaCameraFormat(QtCore.QObject):
+    """
+    The class to describe a video format supported by a camera device.
+
+    VimbaCameraFormat represents a certain video format supported by a Vimba
+    camera device. The format is a combination of a pixel format, resolution and
+    frame rate.
+
+    """
+    def __init__(self, other: Optional["VimbaCameraFormat"] = None):
+        self._frameRate = -1.0
+        self._pixelFormat = None
+        self._resolution = QtCore.QSize(-1, -1)
+
+    def __eq__(self, other):
+        """
+        Returns true if this :class:`VimbaCameraFormat` is equal to `other`.
+        """
+        return (
+            type(self) == type(other)
+            and self._frameRate == other._frameRate
+            and self._pixelFormat == other._pixelFormat
+            and self._resolution == other._resolution
+        )
+
+    def __ne__(self, other):
+        """
+        Returns true if this :class:`VimbaCameraFormat` is different from
+        `other`.
+        """
+        return (
+            type(self) != type(other)
+            or self._frameRate != other._frameRate
+            or self._pixelFormat != other._pixelFormat
+            or self._resolution != other._resolution
+        )
+
+    def isNull(self) -> bool:
+        """
+        Returns true if this is a default constructed :class:`VimbaCameraFormat`.
+        """
+        return (
+            self._frameRate == -1
+            and self._pixelFormat is None
+            and self._resolution == QtCore.QSize(-1, -1)
+        )
+
+    def frameRate(self) -> float:
+        """Returns the acquisition frame rate of the camera."""
+        return self._frameRate
+
+    def _setFrameRate(self, frameRate: float):
+        self._frameRate = frameRate
+
+    def pixelFormat(self) -> Optional[vimba.PixelFormat]:
+        """
+        Returns the pixel format. None indicates invalid format.
+        """
+        return self._pixelFormat
+
+    def _setPixelFormat(self, pixelFormat: Optional[vimba.PixelFormat]):
+        self._pixelFormat = pixelFormat
+
+    def resolution(self) -> QtCore.QSize:
+        """Returns the resolution."""
+        return self._resolution
+
+    def _setResolution(self, resolution: QtCore.QSize):
+        self._resoultion = resolution
