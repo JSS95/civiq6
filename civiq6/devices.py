@@ -2,8 +2,13 @@
 Vimba camera device
 ===================
 
-:mod:`civiq6.devices` provides classes to manage physical cameras controlled by
-Vimba SDK.
+:mod:`civiq6.devices` provides classes to manage physical camera devices
+controlled by Vimba SDK.
+
+To access the camera, Vimba instance must be run first by :class:`VimbaRunner`.
+After that the user can get the list of available camera devices and their
+information using :class:`VimbaDevices` and :class:`VimbaCameraDevice`, just as
+one would use ``QMediaDevices`` and ``QCameraDevice``.
 
 .. autoclass:: VimbaRunner
    :members:
@@ -38,14 +43,11 @@ class VimbaRunner(QtCore.QObject):
     """
     Class to run the Vimba instance.
 
-    :class:`VimbaRunner` manages the camera change event by running the Vimba
-    instance in event loop. Once Vimba instance is successfully run,
-    :attr:`vimbaReady` signal is emitted.
+    :class:`VimbaRunner` is a singleton object which runs the Vimba instance in
+    an event loop to activate the API and to manage the camera change event.
+    This object must be run before any Vimba-related operation.
 
-    To access the cameras, this instance must be run first. Typical way to use is
-    to move the instance to dedicated thread.
-
-    This example runs :class:`VimbaRunner` in dedicated thread:
+    The typical usage is to call :meth:`runVimba` in a dedicated thread:
 
     .. code:: python
 
@@ -55,7 +57,8 @@ class VimbaRunner(QtCore.QObject):
        vimbaThread.started.connect(vimbaRunner.runVimba)
        vimbaThread.start()
 
-    :class:`VimbaRunner` is a singleton object.
+    Once the Vimba instance is successfully started, :attr:`vimbaReady` signal is
+    emitted.
 
     """
 
@@ -77,7 +80,7 @@ class VimbaRunner(QtCore.QObject):
     @QtCore.Slot()
     def runVimba(self):
         """
-        Run the vimba instance.
+        Run the Vimba instance.
 
         This method registers :meth:`cameraChangeHandler` to the camera change
         handler of Vimba instance, and loades all connected cameras to
@@ -93,15 +96,16 @@ class VimbaRunner(QtCore.QObject):
         with VIMBA_INST:
             try:
                 VIMBA_INST.register_camera_change_handler(self.cameraChangeHandler)
-                self.updateCameras()
+                self._updateCameras()
                 self.vimbaReady.emit()
                 self._eventLoop.exec()
             finally:
                 VIMBA_INST.unregister_camera_change_handler(self.cameraChangeHandler)
 
+    @QtCore.Slot()
     def stopVimba(self):
         """
-        Stop all running cameras and quits the Vimba instance event loop.
+        Stop all running cameras and quit the Vimba event loop.
         """
         while self._runningCameras:
             cam = self._runningCameras.pop()
@@ -109,24 +113,27 @@ class VimbaRunner(QtCore.QObject):
         self._eventLoop.quit()
 
     def cameraChangeHandler(self, camera: vimba.Camera, event: vimba.CameraEvent):
-        """Run :meth:`updateCameras`."""
-        self.updateCameras()
+        """Refresh the list of camera of :class:`VimbaDevices`."""
+        self._updateCameras()
 
-    def updateCameras(self):
-        """Update all cameras to :class:`VimbaDevices`."""
+    def _updateCameras(self):
         cams = VIMBA_INST.get_all_cameras()
-        VimbaDevices().setVideoInputs([VimbaCameraDevice.fromCamera(c) for c in cams])
+        VimbaDevices()._setVideoInputs([VimbaCameraDevice._fromCamera(c) for c in cams])
 
 
 class VimbaDevices(QtCore.QObject):
     """
     Class to provide information about available camera devices.
 
-    :class:`VimbaDevices` provides a list of connected camera devices by
-    :meth:`videoInputs`. Change is notified by :attr:`videoInputsChanged` signal.
+    :class:`VimbaDevices` provides access to the available camera devices.
+    :meth:`videoInputs` returns a list of available devices, and
+    :meth:`defaultVideoInput` returns a default device among them.
 
-    :class:`VimbaDevices` is a singleton object, and :class:`VimbaRunner` must be
-    run first.
+    When a new devices has been connected or and attached device has
+    been disconnected, the change is notified by :attr:`videoInputsChanged`
+    signal.
+
+    :class:`VimbaDevices` is a singleton object.
 
     """
 
@@ -146,10 +153,18 @@ class VimbaDevices(QtCore.QObject):
 
     @staticmethod
     def videoInputs() -> List["VimbaCameraDevice"]:
+        """Return a list of available cameras on the system."""
         return VimbaDevices()._videoInputs
 
     @staticmethod
     def defaultVideoInput() -> "VimbaCameraDevice":
+        """
+        Return the default camera.
+
+        The default device is the first item in :meth:`videoInputs`. If no camera
+        is available, invalid :class:`VimbaCameraDevice` is returned.
+
+        """
         videoInputs = VimbaDevices.videoInputs()
         if not videoInputs:
             ret = VimbaCameraDevice()
@@ -157,15 +172,14 @@ class VimbaDevices(QtCore.QObject):
             ret = videoInputs[0]
         return ret
 
-    @QtCore.Slot(list)
-    def setVideoInputs(self, videoInputs: List["VimbaCameraDevice"]):
+    def _setVideoInputs(self, videoInputs: List["VimbaCameraDevice"]):
         self._videoInputs = videoInputs
         self.videoInputsChanged.emit()
 
 
 class VimbaCameraDevice(QtCore.QObject):
     """
-    Class to provide general information about camera device.
+    Class to provide general information about camera devices.
 
     :class:`VimbaCameraDevice` represents a physical camera device managed by
     Vimba, and its properties.
@@ -180,9 +194,9 @@ class VimbaCameraDevice(QtCore.QObject):
        for cameraDevice in cameras:
            print(cameraDevice.description())
 
-    A :class:`VimbaCameraDevice` can be used to construct a :class:`VimbaCamera`.
-    The following example instantiates a :class:`VimbaCamera` whos camera device
-    is named ``mycamera``:
+    A VimbaCameraDevice can be used to construct a :class:`.VimbaCamera`. The
+    following example instantiates a :class:`VimbaCamera` whose camera device is
+    named ``mycamera``:
 
     .. code:: python
 
@@ -191,8 +205,8 @@ class VimbaCameraDevice(QtCore.QObject):
            if (cameraDevice.description() == "mycamera")
                camera = VimbaCamera(cameraDevice)
 
-    You can also use :class:`VimbaCameraDevice` to get general information about
-    a camera device such as frame rate, resolution or pixel format.
+    You can also use VimbaCameraDevice to get general information about a camera
+    device such as frame rate, resolution or pixel format.
 
     .. code:: python
 
@@ -203,7 +217,7 @@ class VimbaCameraDevice(QtCore.QObject):
     """
 
     @classmethod
-    def fromCamera(cls, camera: vimba.Camera):
+    def _fromCamera(cls, camera: vimba.Camera):
         obj = cls()
         obj._Camera = camera
         obj._id = camera.get_id()
@@ -235,16 +249,19 @@ class VimbaCameraDevice(QtCore.QObject):
         return type(self) != type(other) or self._Camera != other._Camera
 
     def id(self) -> QtCore.QByteArray:
+        """Return the device id of the camera."""
         return QtCore.QByteArray(self._id)  # type: ignore[call-overload]
 
     def description(self) -> str:
+        """Return the human-readable description of the camera."""
         return self._desc
 
     def isNull(self) -> bool:
-        """Returns true if this :class:`VimbaCameraDevice` is null or invalid."""
+        """Return true if this :class:`VimbaCameraDevice` is null or invalid."""
         return self._Camera is None
 
     def isDefault(self) -> bool:
+        """Return true if this is the default camera device."""
         return self == VimbaDevices().defaultVideoInput()
 
     def frameRate(self) -> float:
