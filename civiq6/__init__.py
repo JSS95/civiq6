@@ -17,6 +17,9 @@ from .devices import (
 from .camera import (
     VimbaCamera,
 )
+from .camera2 import (
+    VimbaCamera2,
+)
 from .capture import (
     VimbaCaptureSession,
     ArraySink,
@@ -31,6 +34,7 @@ __all__ = [
     "VimbaDevices",
     "VimbaCameraDevice",
     "VimbaCamera",
+    "VimbaCamera2",
     "VimbaCaptureSession",
     "ArraySink",
     "VimbaImageCapture",
