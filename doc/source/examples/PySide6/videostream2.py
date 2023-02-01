@@ -1,7 +1,7 @@
-from PySide6.QtCore import Slot, QThread, QEventLoop, Qt
-from PySide6.QtGui import QImage, QPixmap
-from PySide6.QtWidgets import QMainWindow, QLabel
-from civiq6 import VimbaRunner, VimbaCamera2, VimbaCaptureSession, ArraySink
+from PySide6.QtCore import QThread, QEventLoop
+from PySide6.QtWidgets import QMainWindow
+from PySide6.QtMultimediaWidgets import QVideoWidget
+from civiq6 import VimbaRunner, VimbaCamera2, VimbaCaptureSession2
 
 
 class Window(QMainWindow):
@@ -19,23 +19,15 @@ class Window(QMainWindow):
         self._waitVimba.exec()
 
         self._camera = VimbaCamera2()
-        self._captureSession = VimbaCaptureSession()
-        self._arraySink = ArraySink()
-        self._label = QLabel()
-
+        self._captureSession = VimbaCaptureSession2()
+        self._videoWidget = QVideoWidget()
         self._captureSession.setCamera(self._camera)
-        self._captureSession.setArraySink(self._arraySink)
-        self._arraySink.imageChanged.connect(self.setImageToLabel)
+        self._captureSession.setVideoOutput(self._videoWidget)
 
-        self._label.setAlignment(Qt.AlignCenter)
-        self.setCentralWidget(self._label)
+        self.setCentralWidget(self._videoWidget)
 
         # start camera
         self._camera.start()
-
-    @Slot(QImage)
-    def setImageToLabel(self, image: QImage):
-        self._label.setPixmap(QPixmap.fromImage(image))
 
     def closeEvent(self, event):
         self._vimbaRunner.stopVimba()

@@ -4,7 +4,7 @@ from .qt_compat import QtCore
 from typing import Optional, TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from .capture import VimbaCaptureSession
+    from .capture2 import VimbaCaptureSession2
 
 
 __all__ = [
@@ -33,7 +33,7 @@ class VimbaCamera2(QtCore.QObject):
     def cameraDevice(self) -> VimbaCameraDevice:
         return self._cameraDevice
 
-    def captureSession(self) -> Optional["VimbaCaptureSession"]:
+    def captureSession(self) -> Optional["VimbaCaptureSession2"]:
         return self._captureSession
 
     def isAvailable(self) -> bool:
@@ -92,7 +92,7 @@ class VimbaCamera2(QtCore.QObject):
                 pass
             self.activeChanged.emit(active)
 
-    def _setCaptureSession(self, session: "VimbaCaptureSession"):
+    def _setCaptureSession(self, session: "VimbaCaptureSession2"):
         self._streamingThread.setCaptureSession(session)
         self._captureSession = session
 
@@ -103,7 +103,7 @@ class _StreamingThread(QtCore.QThread):
     def __init__(self, camera: Optional[vimba.Camera] = None, parent=None):
         super().__init__(parent)
         self.camera = camera
-        self.captureSession: Optional["VimbaCaptureSession"] = None
+        self.captureSession: Optional["VimbaCaptureSession2"] = None
 
     def run(self):
         if self.camera is not None:
@@ -122,11 +122,10 @@ class _StreamingThread(QtCore.QThread):
 
     def grabFrame(self, camera: vimba.Camera, frame: vimba.Frame):
         if frame.get_status() == vimba.FrameStatus.Complete:
-            array = frame.as_opencv_image().copy()
             session = self.captureSession
             if session is not None:
-                session._setArray(array)
+                session._setFrame(frame)
         camera.queue_frame(frame)
 
-    def setCaptureSession(self, captureSession: Optional["VimbaCaptureSession"]):
+    def setCaptureSession(self, captureSession: Optional["VimbaCaptureSession2"]):
         self.captureSession = captureSession

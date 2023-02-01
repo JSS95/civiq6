@@ -27,6 +27,9 @@ from .capture import (
     VideoCaptureFormat,
     VimbaVideoRecorder,
 )
+from .capture2 import (
+    VimbaCaptureSession2,
+)
 
 
 __all__ = [
@@ -40,4 +43,5 @@ __all__ = [
     "VimbaImageCapture",
     "VideoCaptureFormat",
     "VimbaVideoRecorder",
+    "VimbaCaptureSession2",
 ]
