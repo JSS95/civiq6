@@ -1,5 +1,5 @@
 import vimba  # type: ignore[import]
-from .qt_compat import QtCore, QtMultimedia
+from .qt_compat import QtCore, QtMultimedia, get_frame_data
 from .camera2 import VimbaCamera2
 from typing import Optional, Protocol
 
@@ -22,16 +22,17 @@ def vimbaFrame2VideoFrame(frame: vimba.Frame) -> QtMultimedia.QVideoFrame:
     )
     w, h = frame.get_width(), frame.get_height()
     frameFormat = QtMultimedia.QVideoFrameFormat(QtCore.QSize(w, h), pixelFormat)
-    vidframe = QtMultimedia.QVideoFrame(frameFormat)
+    videoFrame = QtMultimedia.QVideoFrame(frameFormat)
 
     if pixelFormat != QtMultimedia.QVideoFrameFormat.PixelFormat.Format_Invalid:
-        vidframe.map(QtMultimedia.QVideoFrame.MapMode.WriteOnly)
-        vidframe.bits(0)[:] = bytes(frame.get_buffer())
-        vidframe.unmap()  # save the modified memory to vidframe instance
-    return vidframe
+        videoFrame.map(QtMultimedia.QVideoFrame.MapMode.WriteOnly)
+        get_frame_data(videoFrame)[:] = bytes(frame.get_buffer())
+        videoFrame.unmap()  # save the modified memory
+    return videoFrame
 
 
 class VideoOutputProtocol(Protocol):
+    # TODO: remove this protocol and just use hasattr(qobj, "videoSink")
     def videoSink(self) -> Optional[QtMultimedia.QVideoSink]:
         ...
 

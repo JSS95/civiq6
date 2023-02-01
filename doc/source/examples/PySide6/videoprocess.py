@@ -90,7 +90,7 @@ class Window(QMainWindow):
 
 
 if __name__ == "__main__":
-    import vimba
+    import vimba  # type: ignore[import]
     from PySide6.QtWidgets import QApplication
     import sys
 

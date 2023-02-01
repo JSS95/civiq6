@@ -250,7 +250,7 @@ class VimbaCameraDevice(QtCore.QObject):
 
     def id(self) -> QtCore.QByteArray:
         """Return the device id of the camera."""
-        return QtCore.QByteArray(self._id)  # type: ignore[call-overload]
+        return QtCore.QByteArray(bytes(self._id, "utf-8"))
 
     def description(self) -> str:
         """Return the human-readable description of the camera."""

@@ -75,14 +75,14 @@ class VimbaCamera2(QtCore.QObject):
             return
         runner = VimbaRunner()
         if not self.isActive() and active:
-            cam_id = self.cameraDevice().id().toStdString()
+            cam_id = str(self.cameraDevice().id(), "utf-8")
             VIMBA_LOGGER.info("Starting camera %s." % cam_id)
             self._streamingThread.start()
             self._waitCameraReady.exec()
             runner._runningCameras.append(self)
             self.activeChanged.emit(active)
         elif self.isActive() and not active:
-            cam_id = self.cameraDevice().id().toStdString()
+            cam_id = str(self.cameraDevice().id(), "utf-8")
             VIMBA_LOGGER.info("Terminating camera %s." % cam_id)
             self._streamingThread.quit()
             self._streamingThread.wait()
