@@ -1,6 +1,6 @@
 import vimba  # type: ignore[import]
 from .qt_compat import QtCore, QtMultimedia
-from .camera import VimbaCamera
+from .camera2 import VimbaCamera2
 from typing import Optional, Protocol
 
 
@@ -45,10 +45,10 @@ class VimbaCaptureSession2(QtCore.QObject):
         self._videoSink = None
         self._videoOutput = None
 
-    def camera(self) -> Optional[VimbaCamera]:
+    def camera(self) -> Optional[VimbaCamera2]:
         return self._camera
 
-    def setCamera(self, camera: Optional[VimbaCamera]):
+    def setCamera(self, camera: Optional[VimbaCamera2]):
         old_camera = self.camera()
         if old_camera is not None:
             old_camera._setCaptureSession(None)

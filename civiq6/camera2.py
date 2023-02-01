@@ -92,7 +92,7 @@ class VimbaCamera2(QtCore.QObject):
                 pass
             self.activeChanged.emit(active)
 
-    def _setCaptureSession(self, session: "VimbaCaptureSession2"):
+    def _setCaptureSession(self, session: Optional["VimbaCaptureSession2"]):
         self._streamingThread.setCaptureSession(session)
         self._captureSession = session
 
