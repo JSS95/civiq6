@@ -98,7 +98,6 @@ class VimbaCamera2(QtCore.QObject):
 
 
 class _StreamingThread(QtCore.QThread):
-
     ready = QtCore.Signal()
 
     def __init__(self, camera: Optional[vimba.Camera] = None, parent=None):
