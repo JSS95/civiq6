@@ -17,6 +17,7 @@ COMPATIBLE_FORMATS = {
 
 class VimbaCaptureSession2(QtCore.QObject):
     cameraChanged = QtCore.Signal()
+    videoOutputChanged = QtCore.Signal()
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -76,3 +77,4 @@ class VimbaCaptureSession2(QtCore.QObject):
             self._videoSink = videoOutput.videoSink()
         else:
             self._videoSink = None
+        self.videoOutputChanged.emit()
