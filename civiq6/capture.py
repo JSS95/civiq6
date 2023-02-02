@@ -97,15 +97,13 @@ class VimbaCaptureSession(QtCore.QObject):
         self.videoOutputChanged.emit()
 
     def _setFrame(self, frame: vimba.Frame):
-        byte_data = bytes(frame.get_buffer())
-
         imageCapture = self._imageCapture
         if imageCapture is not None:
-            imageCapture._setFrameBytes(byte_data)
+            imageCapture._setFrame(frame)
 
         recorder = self._recorder
         if recorder is not None:
-            recorder._setFrameBytes(byte_data)
+            recorder._setFrame(frame)
 
         videoSink = self._videoSink
         if videoSink is not None:
@@ -122,7 +120,7 @@ class VimbaCaptureSession(QtCore.QObject):
             videoFrame = QtMultimedia.QVideoFrame(frameFormat)
             if pixelFormat != QtMultimedia.QVideoFrameFormat.PixelFormat.Format_Invalid:
                 videoFrame.map(QtMultimedia.QVideoFrame.MapMode.WriteOnly)
-                get_frame_data(videoFrame)[:] = byte_data
+                get_frame_data(videoFrame)[:] = bytes(frame.get_buffer())
                 videoFrame.unmap()  # save the modified memory
             # set constructed QVideoFrame to video sink
             videoSink.setVideoFrame(videoFrame)
@@ -132,7 +130,7 @@ class ImageCaptureProtocol(Protocol):
     def _setCaptureSession(self, captureSession: VimbaCaptureSession):
         ...
 
-    def _setFrameBytes(self, frameBytes: bytes):
+    def _setFrame(self, frame: vimba.Frame):
         ...
 
 
@@ -140,5 +138,5 @@ class RecorderProtocol(Protocol):
     def _setCaptureSession(self, captureSession: VimbaCaptureSession):
         ...
 
-    def _setFrameBytes(self, frameBytes: bytes):
+    def _setFrame(self, frame: vimba.Frame):
         ...
