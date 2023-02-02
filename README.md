@@ -28,9 +28,6 @@ CIViQ6 is designed to be similar to Qt6's QtMultimedia framework:
 |     QCameraDevice    |   VimbaCameraDevice  |
 |       QCamera        |      VimbaCamera     |
 | QMediaCaptureSession |  VimbaCaptureSession |
-|      QVideoSink      |       ArraySink      |
-|     QImageCapture    |   VimbaImageCapture  |
-|    QMediaRecorder    |   VimbaVideoRecorder |
 
 For more information, refer to the documentation and examples.
 
