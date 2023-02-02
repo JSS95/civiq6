@@ -12,7 +12,7 @@ Capturing the frames
 
 import vimba  # type: ignore[import]
 from .qt_compat import QtCore, QtMultimedia, get_frame_data
-from .camera2 import VimbaCamera2
+from .camera import VimbaCamera
 from typing import Optional, Protocol
 
 
@@ -41,10 +41,10 @@ class VimbaCaptureSession(QtCore.QObject):
         self._videoSink = None
         self._videoOutput = None
 
-    def camera(self) -> Optional[VimbaCamera2]:
+    def camera(self) -> Optional[VimbaCamera]:
         return self._camera
 
-    def setCamera(self, camera: Optional[VimbaCamera2]):
+    def setCamera(self, camera: Optional[VimbaCamera]):
         old_camera = self.camera()
         if old_camera is not None:
             old_camera._setCaptureSession(None)
