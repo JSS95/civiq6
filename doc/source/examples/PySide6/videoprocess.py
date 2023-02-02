@@ -2,12 +2,12 @@
 Video processing example with multithreaded Gaussian blurring.
 """
 
-import cv2
+import cv2  # type: ignore[import]
 import numpy as np
 from PySide6.QtCore import QObject, Signal, Slot, QThread, QEventLoop, Qt
 from PySide6.QtGui import QImage, QPixmap
 from PySide6.QtWidgets import QMainWindow, QLabel
-from qimage2ndarray import rgb_view, array2qimage
+from qimage2ndarray import rgb_view, array2qimage  # type: ignore[import]
 from civiq6 import VimbaRunner, VimbaCamera, VimbaCaptureSession, ArraySink
 
 
