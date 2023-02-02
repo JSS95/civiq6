@@ -147,8 +147,10 @@ if binding in ("PySide6",):
 
 elif binding in ("PyQt6",):
 
-      # Don't know how to access the memory using sip.voidptr...
-    raise NotImplementedError
+    def get_frame_data(frame: QtMultimedia.QVideoFrame):  # type: ignore[name-defined]
+        ptr = frame.bits(0)
+        ptr.setsize(frame.mappedBytes(0))
+        return ptr
 
 else:
     raise QtAPIError(f"Specified Qt binding: '{binding}'")
