@@ -15,22 +15,6 @@ COMPATIBLE_FORMATS = {
 }
 
 
-def vimbaFrame2VideoFrame(frame: vimba.Frame) -> QtMultimedia.QVideoFrame:
-    pixelFormat = COMPATIBLE_FORMATS.get(
-        frame.get_pixel_format(),
-        QtMultimedia.QVideoFrameFormat.PixelFormat.Format_Invalid,
-    )
-    w, h = frame.get_width(), frame.get_height()
-    frameFormat = QtMultimedia.QVideoFrameFormat(QtCore.QSize(w, h), pixelFormat)
-    videoFrame = QtMultimedia.QVideoFrame(frameFormat)
-
-    if pixelFormat != QtMultimedia.QVideoFrameFormat.PixelFormat.Format_Invalid:
-        videoFrame.map(QtMultimedia.QVideoFrame.MapMode.WriteOnly)
-        get_frame_data(videoFrame)[:] = bytes(frame.get_buffer())
-        videoFrame.unmap()  # save the modified memory
-    return videoFrame
-
-
 class VimbaCaptureSession2(QtCore.QObject):
     cameraChanged = QtCore.Signal()
 
@@ -53,9 +37,26 @@ class VimbaCaptureSession2(QtCore.QObject):
         self.cameraChanged.emit()
 
     def _setFrame(self, frame: vimba.Frame):
-        videoFrame = vimbaFrame2VideoFrame(frame)
+        byte_data = bytes(frame.get_buffer())
+
         videoSink = self._videoSink
         if videoSink is not None:
+            # convert vimba frame to QVideoFrame
+            pixelFormat = COMPATIBLE_FORMATS.get(
+                frame.get_pixel_format(),
+                QtMultimedia.QVideoFrameFormat.PixelFormat.Format_Invalid,
+            )
+            w, h = frame.get_width(), frame.get_height()
+            frameFormat = QtMultimedia.QVideoFrameFormat(
+                QtCore.QSize(w, h),
+                pixelFormat,
+            )
+            videoFrame = QtMultimedia.QVideoFrame(frameFormat)
+            if pixelFormat != QtMultimedia.QVideoFrameFormat.PixelFormat.Format_Invalid:
+                videoFrame.map(QtMultimedia.QVideoFrame.MapMode.WriteOnly)
+                get_frame_data(videoFrame)[:] = byte_data
+                videoFrame.unmap()  # save the modified memory
+            # set constructed QVideoFrame to video sink
             videoSink.setVideoFrame(videoFrame)
 
     def videoSink(self) -> Optional[QtMultimedia.QVideoSink]:
