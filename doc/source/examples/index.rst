@@ -10,4 +10,3 @@ This page gives advanced examples to perform image analysis with CIViQ6.
    :maxdepth: 2
 
    videostream
-   videoprocess

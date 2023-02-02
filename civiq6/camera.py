@@ -1,3 +1,12 @@
+"""
+Camera API
+==========
+
+.. autoclass:: VimbaCamera
+   :members:
+
+"""
+
 import vimba  # type: ignore[import]
 from .devices import VimbaRunner, VimbaDevices, VimbaCameraDevice
 from .qt_compat import QtCore
