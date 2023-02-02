@@ -137,3 +137,20 @@ qt_api = QtAPI()
 QtCore = qt_api.QtCore
 QtWidgets = qt_api.QtWidgets
 QtGui = qt_api.QtGui
+QtMultimedia = qt_api.QtMultimedia
+
+binding = qt_api.qt_binding
+if binding in ("PySide6",):
+
+    def get_frame_data(frame: QtMultimedia.QVideoFrame):  # type: ignore[name-defined]
+        return frame.bits(0)
+
+elif binding in ("PyQt6",):
+
+    def get_frame_data(frame: QtMultimedia.QVideoFrame):  # type: ignore[name-defined]
+        ptr = frame.bits(0)
+        ptr.setsize(frame.mappedBytes(0))
+        return ptr
+
+else:
+    raise QtAPIError(f"Specified Qt binding: '{binding}'")

@@ -1,6 +1,6 @@
-from PySide6.QtCore import QThread, QEventLoop
-from PySide6.QtWidgets import QMainWindow
-from PySide6.QtMultimediaWidgets import QVideoWidget
+from PyQt6.QtCore import QThread, QEventLoop
+from PyQt6.QtWidgets import QMainWindow
+from PyQt6.QtMultimediaWidgets import QVideoWidget
 from civiq6 import VimbaRunner, VimbaCamera, VimbaCaptureSession
 
 
@@ -38,7 +38,7 @@ class Window(QMainWindow):
 
 if __name__ == "__main__":
     import vimba  # type: ignore[import]
-    from PySide6.QtWidgets import QApplication
+    from PyQt6.QtWidgets import QApplication
     import sys
 
     VIMBA_INST = vimba.Vimba.get_instance()

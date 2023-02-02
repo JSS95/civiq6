@@ -19,10 +19,6 @@ from .camera import (
 )
 from .capture import (
     VimbaCaptureSession,
-    ArraySink,
-    VimbaImageCapture,
-    VideoCaptureFormat,
-    VimbaVideoRecorder,
 )
 
 
@@ -32,8 +28,4 @@ __all__ = [
     "VimbaCameraDevice",
     "VimbaCamera",
     "VimbaCaptureSession",
-    "ArraySink",
-    "VimbaImageCapture",
-    "VideoCaptureFormat",
-    "VimbaVideoRecorder",
 ]

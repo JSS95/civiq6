@@ -57,7 +57,10 @@ jobs:
           pip install .[test]
 
       - name: run mypy check
-        run: mypy civiq6
+        run: |
+          mypy civiq6
+          mypy doc/source --exclude doc/source/examples
+          mypy doc/source/examples/${{ matrix.qt }}
 
   doc:
 

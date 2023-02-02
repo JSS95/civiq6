@@ -114,6 +114,11 @@ class VimbaRunner(QtCore.QObject):
 
     def cameraChangeHandler(self, camera: vimba.Camera, event: vimba.CameraEvent):
         """Refresh the list of camera of :class:`VimbaDevices`."""
+        try:
+            i = [c.cameraDevice()._Camera for c in self._runningCameras].index(camera)
+            self._runningCameras.pop(i).stop()
+        except ValueError:
+            pass
         self._updateCameras()
 
     def _updateCameras(self):
@@ -250,7 +255,7 @@ class VimbaCameraDevice(QtCore.QObject):
 
     def id(self) -> QtCore.QByteArray:
         """Return the device id of the camera."""
-        return QtCore.QByteArray(self._id)  # type: ignore[call-overload]
+        return QtCore.QByteArray(bytes(self._id, "utf-8"))
 
     def description(self) -> str:
         """Return the human-readable description of the camera."""
