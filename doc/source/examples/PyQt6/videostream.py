@@ -1,7 +1,7 @@
 from PyQt6.QtCore import QThread, QEventLoop
 from PyQt6.QtWidgets import QMainWindow
 from PyQt6.QtMultimediaWidgets import QVideoWidget
-from civiq6 import VimbaRunner, VimbaCamera2, VimbaCaptureSession2
+from civiq6 import VimbaRunner, VimbaCamera2, VimbaCaptureSession
 
 
 class Window(QMainWindow):
@@ -19,7 +19,7 @@ class Window(QMainWindow):
         self._waitVimba.exec()
 
         self._camera = VimbaCamera2()
-        self._captureSession = VimbaCaptureSession2()
+        self._captureSession = VimbaCaptureSession()
         self._videoWidget = QVideoWidget()
         self._captureSession.setCamera(self._camera)
         self._captureSession.setVideoOutput(self._videoWidget)

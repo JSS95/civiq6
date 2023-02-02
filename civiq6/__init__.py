@@ -22,13 +22,6 @@ from .camera2 import (
 )
 from .capture import (
     VimbaCaptureSession,
-    ArraySink,
-    VimbaImageCapture,
-    VideoCaptureFormat,
-    VimbaVideoRecorder,
-)
-from .capture2 import (
-    VimbaCaptureSession2,
 )
 
 
@@ -39,9 +32,4 @@ __all__ = [
     "VimbaCamera",
     "VimbaCamera2",
     "VimbaCaptureSession",
-    "ArraySink",
-    "VimbaImageCapture",
-    "VideoCaptureFormat",
-    "VimbaVideoRecorder",
-    "VimbaCaptureSession2",
 ]
