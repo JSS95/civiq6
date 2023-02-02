@@ -1,7 +1,7 @@
 import vimba  # type: ignore[import]
 from .qt_compat import QtCore, QtMultimedia, get_frame_data
 from .camera2 import VimbaCamera2
-from typing import Optional
+from typing import Optional, Protocol
 
 
 __all__ = [
@@ -17,11 +17,13 @@ COMPATIBLE_FORMATS = {
 
 class VimbaCaptureSession2(QtCore.QObject):
     cameraChanged = QtCore.Signal()
+    imageCaptureChanged = QtCore.Signal()
     videoOutputChanged = QtCore.Signal()
 
     def __init__(self, parent=None):
         super().__init__(parent)
         self._camera = None
+        self._imageCapture = None
         self._videoSink = None
         self._videoOutput = None
 
@@ -39,6 +41,10 @@ class VimbaCaptureSession2(QtCore.QObject):
 
     def _setFrame(self, frame: vimba.Frame):
         byte_data = bytes(frame.get_buffer())
+
+        imageCapture = self._imageCapture
+        if imageCapture is not None:
+            imageCapture._setFrameBytes(byte_data)
 
         videoSink = self._videoSink
         if videoSink is not None:
@@ -60,6 +66,18 @@ class VimbaCaptureSession2(QtCore.QObject):
             # set constructed QVideoFrame to video sink
             videoSink.setVideoFrame(videoFrame)
 
+    def imageCapture(self) -> Optional["ImageCaptureProtocol"]:
+        return self._imageCapture
+
+    def setImageCapture(self, imageCapture: Optional["ImageCaptureProtocol"]):
+        old_capture = self._imageCapture
+        if old_capture is not None:
+            old_capture._setCaptureSession(None)
+        self._imageCapture = imageCapture
+        if imageCapture is not None:
+            imageCapture._setCaptureSession(self)
+        self.imageCaptureChanged.emit()
+
     def videoSink(self) -> Optional[QtMultimedia.QVideoSink]:
         return self._videoSink
 
@@ -78,3 +96,11 @@ class VimbaCaptureSession2(QtCore.QObject):
         else:
             self._videoSink = None
         self.videoOutputChanged.emit()
+
+
+class ImageCaptureProtocol(Protocol):
+    def _setCaptureSession(self, captureSession: VimbaCaptureSession2):
+        ...
+
+    def _setFrameBytes(self, frameBytes: bytes):
+        ...
