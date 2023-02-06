@@ -4,7 +4,7 @@ from PyQt6.QtMultimediaWidgets import QVideoWidget
 from civiq6 import VimbaRunner, VimbaCamera, VimbaCaptureSession
 
 
-class Window(QMainWindow):
+class CameraWindow(QMainWindow):
     def __init__(self, parent=None):
         super().__init__(parent)
 
@@ -45,7 +45,7 @@ if __name__ == "__main__":
     VIMBA_INST.enable_log(vimba.LOG_CONFIG_INFO_CONSOLE_ONLY)
 
     app = QApplication(sys.argv)
-    window = Window()
+    window = CameraWindow()
     window.show()
     app.exec()
     app.quit()

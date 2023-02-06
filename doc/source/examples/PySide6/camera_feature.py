@@ -1,9 +1,9 @@
 from PySide6.QtCore import Slot
 from PySide6.QtWidgets import QToolBar, QDoubleSpinBox
-from videostream import CameraWindow
+from camera_stream import CameraWindow
 
 
-class CameraFeatureWindow(CameraWindow):
+class CameraFPSWindow(CameraWindow):
     def __init__(self, parent=None):
         super().__init__(parent)
 
@@ -49,7 +49,7 @@ if __name__ == "__main__":
     VIMBA_INST.enable_log(vimba.LOG_CONFIG_INFO_CONSOLE_ONLY)
 
     app = QApplication(sys.argv)
-    window = CameraFeatureWindow()
+    window = CameraFPSWindow()
     window.show()
     app.exec()
     app.quit()
