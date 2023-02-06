@@ -38,7 +38,7 @@ class VideoRecorder(QObject):
         self._outputLocation = outputLocation
 
     def recorderState(self) -> RecorderState:
-        self._recorderState
+        return self._recorderState
 
     @Slot()
     def record(self):
