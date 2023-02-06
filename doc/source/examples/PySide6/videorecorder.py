@@ -48,6 +48,8 @@ class VideoRecorder(QObject):
         camera = session.camera()
         if camera is None:
             return
+        if not camera.isAvailable():
+            return
 
         if self._recorderState == self.RecorderState.StoppedState:
             path = self._outputLocation.toLocalFile()
