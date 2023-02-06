@@ -8,6 +8,7 @@ Camera API
 """
 
 import vimba  # type: ignore[import]
+from vimba.feature import FeaturesTuple, FeatureTypes
 from .devices import VimbaRunner, VimbaDevices, VimbaCameraDevice
 from .qt_compat import QtCore
 from typing import Optional, TYPE_CHECKING
@@ -25,6 +26,14 @@ VIMBA_LOGGER = vimba.Log.get_instance()
 
 
 class VimbaCamera(QtCore.QObject):
+    """
+    .. code:: python
+
+       camera = VimbaCamera()
+       camera.getFeatureByName("AcquisitionFrameRateMode").set("Basic")
+       camera.getFeatureByName("AcquisitionFrameRate").set(30.0)
+    """
+
     activeChanged = QtCore.Signal(bool)
     cameraDeviceChanged = QtCore.Signal()
 
@@ -105,6 +114,38 @@ class VimbaCamera(QtCore.QObject):
     def _setCaptureSession(self, session: Optional["VimbaCaptureSession"]):
         self._streamingThread.setCaptureSession(session)
         self._captureSession = session
+
+    def getAllFeatures(self) -> FeaturesTuple:
+        camera = self._cameraDevice._Camera
+        if camera is None:
+            return ()
+        with camera:
+            ret = camera.get_all_features()
+        return ret
+
+    def getFeaturesAffectedBy(self, feature: FeatureTypes) -> FeaturesTuple:
+        camera = self._cameraDevice._Camera
+        if camera is None:
+            return ()
+        with camera:
+            ret = camera.get_features_affected_by(feature)
+        return ret
+
+    def getFeaturesSelectedBy(self, feature: FeatureTypes) -> FeaturesTuple:
+        camera = self._cameraDevice._Camera
+        if camera is None:
+            return ()
+        with camera:
+            ret = camera.get_features_selected_by(feature)
+        return ret
+
+    def getFeatureByName(self, featureName: str) -> Optional[FeatureTypes]:
+        camera = self._cameraDevice._Camera
+        if camera is None:
+            return None
+        with camera:
+            ret = camera.get_feature_by_name(featureName)
+        return ret
 
 
 class _StreamingThread(QtCore.QThread):
