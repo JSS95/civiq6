@@ -25,7 +25,7 @@ class ImageCapture(QObject):
     def _setCaptureSession(self, captureSession: Optional[VimbaCaptureSession]):
         self._captureSession = captureSession
 
-    @Slot
+    @Slot()
     def captureToFile(self, path: str = "") -> int:
         if self.captureSession() is None or self._image is None:
             return -1
