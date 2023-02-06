@@ -8,7 +8,7 @@ Camera API
 """
 
 import vimba  # type: ignore[import]
-from vimba.feature import FeaturesTuple, FeatureTypes
+from vimba.feature import FeaturesTuple, FeatureTypes  # type: ignore[import]
 from .devices import VimbaRunner, VimbaDevices, VimbaCameraDevice
 from .qt_compat import QtCore
 from typing import Optional, TYPE_CHECKING
