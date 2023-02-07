@@ -1,3 +1,0 @@
-numpy
-opencv-python-headless
-qimage2ndarray >= 1.10
