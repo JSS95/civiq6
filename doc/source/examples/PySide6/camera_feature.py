@@ -46,6 +46,7 @@ if __name__ == "__main__":
 
     app = QApplication(sys.argv)
     window = CameraFPSWindow()
+    window.camera().start()
     window.show()
     app.exec()
     app.quit()
