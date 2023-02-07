@@ -67,7 +67,7 @@ You may add them in brackets right after the package argument.
 Available specifications for CIViQ6 are:
 
 * ``test``: installs modules to run tests
-* ``doc``: installs modules to build documentations
+* ``doc``: installs modules to build documentations and to run the examples
 * ``full``: installs every additional dependency
 
 With commas without trailing whitespaces, i.e. ``[A,B]``, you can pass multiple specifications.

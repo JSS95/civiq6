@@ -58,6 +58,8 @@ Documentation can be found on Read the Docs:
 > https://civiq6.readthedocs.io/
 
 If you want to build the document yourself, clone the source code and install with `[doc]` option.
+This option installs the additional packages to build the document and to run the examples.
+
 Go to `doc` directory and build the document.
 
 ```
