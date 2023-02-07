@@ -4,7 +4,12 @@
 Examples
 ========
 
-This page gives advanced examples to perform image analysis with CIViQ6.
+This page gives examples to perform camera streaming and manipulation using CIViQ6.
+
+.. note::
+
+   Examples requires installation with ``doc`` option.
+   See :ref:`installation` page.
 
 .. toctree::
    :maxdepth: 2

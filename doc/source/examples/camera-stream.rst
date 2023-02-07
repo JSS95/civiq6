@@ -1,5 +1,9 @@
+.. _examples-streaming:
+
 Camera streaming
 ================
+
+This simple script opens a window which streams the frames from currently connected Vimba camera device.
 
 .. tabs::
 
