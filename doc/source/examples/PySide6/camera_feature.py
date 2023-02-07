@@ -10,11 +10,13 @@ VIMBA_LOGGER = vimba.Log.get_instance()
 
 
 def setFeatureValue(cam: VimbaCamera, featName: str, featVal: Any):
-    cam.getFeatureByName(featName).set(featVal)
-    temp = 'Set "%s" feature of camera "%s" to "%s"'
-    VIMBA_LOGGER.info(
-        temp % (featName, str(cam.cameraDevice().id(), "utf-8"), str(featVal))
-    )
+    feat = cam.getFeatureByName(featName)
+    if feat is not None:
+        feat.set(featVal)
+        temp = 'Set "%s" feature of camera "%s" to "%s"'
+        VIMBA_LOGGER.info(
+            temp % (featName, str(cam.cameraDevice().id(), "utf-8"), str(featVal))
+        )
 
 
 class FpsSpinBox(QDoubleSpinBox):
