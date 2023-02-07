@@ -99,15 +99,15 @@ class VimbaCamera(QtCore.QObject):
         runner = VimbaRunner()
         wasRunning = self._streamingThread.isRunning()
         if not camera._disconnected and not wasRunning and active:
-            cam_id = str(self._cameraDevice.id(), "utf-8")
-            VIMBA_LOGGER.info("Starting camera %s." % cam_id)
+            cam_id = "\"%s\"" % camera.get_id()
+            VIMBA_LOGGER.info("Starting camera %s" % cam_id)
             self._streamingThread.start()
             self._waitCameraReady.exec()
             runner._runningCameras.append(self)
             self.activeChanged.emit(active)
         elif wasRunning and not active:
-            cam_id = str(self._cameraDevice.id(), "utf-8")
-            VIMBA_LOGGER.info("Terminating camera %s." % cam_id)
+            cam_id = "\"%s\"" % camera.get_id()
+            VIMBA_LOGGER.info("Terminating camera %s" % cam_id)
             self._streamingThread.quit()
             self._streamingThread.wait()
             try:
@@ -165,16 +165,16 @@ class _StreamingThread(QtCore.QThread):
         camera = self.camera
         if camera is not None:
             with camera:
-                cam_id = camera.get_id()
+                cam_id = "\"%s\"" % camera.get_id()
                 try:
                     camera.start_streaming(self.grabFrame)
                     self.ready.emit()
-                    VIMBA_LOGGER.info("Camera %s started." % cam_id)
+                    VIMBA_LOGGER.info("Camera %s started" % cam_id)
                     self.exec()
                 finally:
                     if camera.is_streaming():
                         camera.stop_streaming()
-                        VIMBA_LOGGER.info("Camera %s terminated." % cam_id)
+                        VIMBA_LOGGER.info("Camera %s terminated" % cam_id)
         else:
             self.ready.emit()
 
