@@ -7,16 +7,16 @@ Before running the example, make sure your scripts are placed in the following d
 
 | examples
 | ├── scripts
-| │⠀⠀⠀├── :ref:`examples-capture-cameracapture`
-| │⠀⠀⠀├── :ref:`examples-capture-imagecapture`
-| │⠀⠀⠀├── :ref:`examples-capture-videorecorder`
+| │⠀⠀⠀├── :ref:`examples-cameracapture`
+| │⠀⠀⠀├── :ref:`examples-imagecapture`
+| │⠀⠀⠀├── :ref:`examples-videorecorder`
 | │⠀⠀⠀└── :ref:`camera_stream.py <examples-streaming>`
 | ├── :download:`capture.svg`
 | └── :download:`record.svg`
 
-Running **camera_capture.py** opens a window where you can capture or record the frames streaming from the Vimba camera device.
+Running **camera_capture.py** opens a camera streaming window where you can capture or record the frames.
 
-.. _examples-capture-imagecapture:
+.. _examples-imagecapture:
 
 imagecapture.py
 ---------------
@@ -37,7 +37,7 @@ imagecapture.py
       .. include:: ./PyQt6/imagecapture.py
          :code: python
 
-.. _examples-capture-videorecorder:
+.. _examples-videorecorder:
 
 videorecorder.py
 ----------------
@@ -58,7 +58,7 @@ videorecorder.py
       .. include:: ./PyQt6/videorecorder.py
          :code: python
 
-.. _examples-capture-cameracapture:
+.. _examples-cameracapture:
 
 camera_capture.py
 -----------------
