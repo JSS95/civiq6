@@ -5,6 +5,7 @@ Examples
 ========
 
 This page gives examples to perform camera streaming and manipulation using CIViQ6.
+Every file for the example can be found in `civiq6/doc/source/examples` directory.
 
 .. note::
 
