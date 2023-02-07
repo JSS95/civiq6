@@ -36,9 +36,9 @@ class CameraFPSWindow(CameraWindow):
                 self._fpsSpinBox.setMaximum(maxFPS)
                 self._fpsSpinBox.setValue(fpsFeature.get())
         else:
-                self._fpsSpinBox.setMinimum(0.0)
-                self._fpsSpinBox.setMaximum(0.0)
-                self._fpsSpinBox.setValue(0.0)
+            self._fpsSpinBox.setMinimum(0.0)
+            self._fpsSpinBox.setMaximum(0.0)
+            self._fpsSpinBox.setValue(0.0)
 
     def closeEvent(self, event):
         self._fpsSpinBox.clearFocus()
