@@ -24,7 +24,7 @@ class FpsSpinBox(QDoubleSpinBox):
 
     def stepBy(self, steps: int):
         super().stepBy(steps)
-        self.editingFinished.emit()
+        self.editingFinished.emit()  # type: ignore[attr-defined]
 
 
 class CameraFPSWindow(CameraWindow):
