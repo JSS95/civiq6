@@ -16,5 +16,6 @@ Every file for the example can be found in `civiq6/doc/source/examples` director
    :maxdepth: 2
 
    camera-stream
+   camera-switch
    camera-feature
    camera-capture

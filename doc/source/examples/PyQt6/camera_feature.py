@@ -1,13 +1,37 @@
 from PyQt6.QtCore import pyqtSlot
 from PyQt6.QtWidgets import QToolBar, QDoubleSpinBox
+import vimba  # type: ignore[import]
+from civiq6 import VimbaCamera
 from camera_stream import CameraWindow
+from typing import Any
+
+
+VIMBA_LOGGER = vimba.Log.get_instance()
+
+
+def setFeatureValue(cam: VimbaCamera, featName: str, featVal: Any):
+    feat = cam.getFeatureByName(featName)
+    if feat is not None:
+        feat.set(featVal)
+        temp = 'Set "%s" feature of camera "%s" to "%s"'
+        VIMBA_LOGGER.info(
+            temp % (featName, str(cam.cameraDevice().id(), "utf-8"), str(featVal))
+        )
+
+
+class FpsSpinBox(QDoubleSpinBox):
+    """Spin box subclass to make triggering the step emit the signal."""
+
+    def stepBy(self, steps: int):
+        super().stepBy(steps)
+        self.editingFinished.emit()
 
 
 class CameraFPSWindow(CameraWindow):
     def __init__(self, parent=None):
         super().__init__(parent)
 
-        self._fpsSpinBox = QDoubleSpinBox()
+        self._fpsSpinBox = FpsSpinBox()
         self._toolBar = QToolBar()
         self._fpsSpinBox.editingFinished.connect(self._onFPSEditingFinish)
 
@@ -22,14 +46,14 @@ class CameraFPSWindow(CameraWindow):
         fps = self._fpsSpinBox.value()
         cam = self._camera
         if cam.isAvailable():
-            cam.getFeatureByName("AcquisitionFrameRate").set(fps)
+            setFeatureValue(cam, "AcquisitionFrameRate", fps)
 
     @pyqtSlot(bool)
     def _onCameraActiveChange(self, active: bool):
         if active:
             cam = self._camera
             if cam.isAvailable():
-                cam.getFeatureByName("AcquisitionFrameRateMode").set("Basic")
+                setFeatureValue(cam, "AcquisitionFrameRateMode", "Basic")
                 fpsFeature = cam.getFeatureByName("AcquisitionFrameRate")
                 minFPS, maxFPS = fpsFeature.get_range()
                 self._fpsSpinBox.setMinimum(minFPS)
@@ -41,12 +65,11 @@ class CameraFPSWindow(CameraWindow):
             self._fpsSpinBox.setValue(0.0)
 
     def closeEvent(self, event):
-        self._fpsSpinBox.clearFocus()
+        self._fpsSpinBox.editingFinished.disconnect(self._onFPSEditingFinish)
         super().closeEvent(event)
 
 
 if __name__ == "__main__":
-    import vimba  # type: ignore[import]
     from PyQt6.QtWidgets import QApplication
     import sys
 
