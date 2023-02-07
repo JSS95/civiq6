@@ -76,7 +76,8 @@ class CameraSwitchWindow(CameraWindow):
 
     def _onVideoInputsChange(self):
         self._toolBar.loadDevices()
-        self._toolBar.setCameraDevice(self._camera.cameraDevice())
+        if len(VimbaDevices.videoInputs()) == 1:
+            self._camera.setCameraDevice(VimbaDevices.defaultVideoInput())
 
     def _onCameraDeviceChange(self):
         self._toolBar.setCameraDevice(self._camera.cameraDevice())
