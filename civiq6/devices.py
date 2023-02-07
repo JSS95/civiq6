@@ -114,12 +114,16 @@ class VimbaRunner(QtCore.QObject):
 
     def cameraChangeHandler(self, camera: vimba.Camera, event: vimba.CameraEvent):
         """Refresh the list of camera of :class:`VimbaDevices`."""
-        try:
-            i = [c.cameraDevice()._Camera for c in self._runningCameras].index(camera)
-            self._runningCameras.pop(i).stop()
-        except ValueError:
-            pass
-        self._updateCameras()
+        if event == vimba.CameraEvent.Missing:
+            try:
+                vimbaCameras = [c.cameraDevice()._Camera for c in self._runningCameras]
+                i = vimbaCameras.index(camera)
+                self._runningCameras.pop(i).stop()
+            except ValueError:
+                pass
+            self._updateCameras()
+        elif event == vimba.CameraEvent.Detected:
+            self._updateCameras()
 
     def _updateCameras(self):
         cams = VIMBA_INST.get_all_cameras()
