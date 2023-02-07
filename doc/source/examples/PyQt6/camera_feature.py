@@ -1,5 +1,5 @@
-from PySide6.QtCore import Slot
-from PySide6.QtWidgets import QToolBar, QDoubleSpinBox
+from PyQt6.QtCore import pyqtSlot
+from PyQt6.QtWidgets import QToolBar, QDoubleSpinBox
 from camera_stream import CameraWindow
 
 
@@ -17,14 +17,14 @@ class CameraFPSWindow(CameraWindow):
         self._toolBar.addWidget(self._fpsSpinBox)
         self.addToolBar(self._toolBar)
 
-    @Slot()
+    @pyqtSlot()
     def _onFPSEditingFinish(self):
         fps = self._fpsSpinBox.value()
         cam = self._camera
         if cam.isAvailable():
             cam.getFeatureByName("AcquisitionFrameRate").set(fps)
 
-    @Slot(bool)
+    @pyqtSlot(bool)
     def _onCameraActiveChange(self, active: bool):
         if active:
             cam = self._camera
@@ -47,7 +47,7 @@ class CameraFPSWindow(CameraWindow):
 
 if __name__ == "__main__":
     import vimba  # type: ignore[import]
-    from PySide6.QtWidgets import QApplication
+    from PyQt6.QtWidgets import QApplication
     import sys
 
     VIMBA_INST = vimba.Vimba.get_instance()

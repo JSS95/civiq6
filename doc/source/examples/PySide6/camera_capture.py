@@ -78,19 +78,16 @@ class CameraCaptureWindow(CameraWindow):
 
         self._imageCapture = ImageCapture()
         self._videoRecorder = VideoRecorder()
-
         self._captureSession.setImageCapture(self._imageCapture)
         self._captureSession.setRecorder(self._videoRecorder)
+
+        self._toolBar = CaptureToolBar()
         self._toolBar.captureRequested.connect(self._imageCapture.captureToFile)
         self._toolBar.recordPathChanged.connect(self._videoRecorder.setOutputLocation)
         self._toolBar.recordStartRequested.connect(self._videoRecorder.record)
         self._toolBar.recordStopRequested.connect(self._videoRecorder.stop)
         self._videoRecorder.recorderStateChanged.connect(self._toolBar.setRecorderState)
 
-    def initUI(self):
-        super().initUI()
-
-        self._toolBar = CaptureToolBar()
         self.addToolBar(self._toolBar)
 
 
@@ -104,6 +101,7 @@ if __name__ == "__main__":
 
     app = QApplication(sys.argv)
     window = CameraCaptureWindow()
+    window.camera().start()
     window.show()
     app.exec()
     app.quit()
