@@ -17,11 +17,18 @@ def setFeatureValue(cam: VimbaCamera, featName: str, featVal: Any):
     )
 
 
+class FpsSpinBox(QDoubleSpinBox):
+    """Spin box subclass to make triggering the step emit the signal."""
+    def stepBy(self, steps: int):
+        super().stepBy(steps)
+        self.editingFinished.emit()
+
+
 class CameraFPSWindow(CameraWindow):
     def __init__(self, parent=None):
         super().__init__(parent)
 
-        self._fpsSpinBox = QDoubleSpinBox()
+        self._fpsSpinBox = FpsSpinBox()
         self._toolBar = QToolBar()
         self._fpsSpinBox.editingFinished.connect(self._onFPSEditingFinish)
 
@@ -55,7 +62,7 @@ class CameraFPSWindow(CameraWindow):
             self._fpsSpinBox.setValue(0.0)
 
     def closeEvent(self, event):
-        self._fpsSpinBox.clearFocus()
+        self._fpsSpinBox.editingFinished.disconnect(self._onFPSEditingFinish)
         super().closeEvent(event)
 
 
