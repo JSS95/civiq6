@@ -7,6 +7,8 @@ class CameraFPSWindow(CameraWindow):
     def __init__(self, parent=None):
         super().__init__(parent)
 
+        self._fpsSpinBox = QDoubleSpinBox()
+        self._toolBar = QToolBar()
         self._fpsSpinBox.editingFinished.connect(self._onEditingFinish)
 
         cam = self._camera
@@ -18,13 +20,7 @@ class CameraFPSWindow(CameraWindow):
             self._fpsSpinBox.setMaximum(maxFPS)
             self._fpsSpinBox.setValue(fpsFeature.get())
 
-    def initUI(self):
-        super().initUI()
-
-        self._fpsSpinBox = QDoubleSpinBox()
         self._fpsSpinBox.setPrefix("FPS: ")
-
-        self._toolBar = QToolBar()
         self._toolBar.addWidget(self._fpsSpinBox)
         self.addToolBar(self._toolBar)
 

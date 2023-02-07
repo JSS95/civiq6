@@ -24,13 +24,10 @@ class CameraWindow(QMainWindow):
         self._captureSession.setCamera(self._camera)
         self._captureSession.setVideoOutput(self._videoWidget)
 
-        self.initUI()
-
-        # start camera
-        self._camera.start()
-
-    def initUI(self):
         self.setCentralWidget(self._videoWidget)
+
+    def camera(self) -> VimbaCamera:
+        return self._camera
 
     def closeEvent(self, event):
         self._vimbaRunner.stopVimba()
@@ -49,6 +46,7 @@ if __name__ == "__main__":
 
     app = QApplication(sys.argv)
     window = CameraWindow()
+    window.camera().start()
     window.show()
     app.exec()
     app.quit()
