@@ -11,7 +11,7 @@ VIMBA_LOGGER = vimba.Log.get_instance()
 
 def setFeatureValue(cam: VimbaCamera, featName: str, featVal: Any):
     cam.getFeatureByName(featName).set(featVal)
-    temp = "Set \"%s\" feature of camera \"%s\" to \"%s\""
+    temp = 'Set "%s" feature of camera "%s" to "%s"'
     VIMBA_LOGGER.info(
         temp % (featName, str(cam.cameraDevice().id(), "utf-8"), str(featVal))
     )
@@ -19,6 +19,7 @@ def setFeatureValue(cam: VimbaCamera, featName: str, featVal: Any):
 
 class FpsSpinBox(QDoubleSpinBox):
     """Spin box subclass to make triggering the step emit the signal."""
+
     def stepBy(self, steps: int):
         super().stepBy(steps)
         self.editingFinished.emit()
