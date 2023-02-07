@@ -94,13 +94,11 @@ class VimbaCamera(QtCore.QObject):
     def setActive(self, active: bool):
         if not self.isAvailable():
             return
-        camera: vimba.Camera = self._cameraDevice._Camera
-        if camera._disconnected:
-            return
 
+        camera: vimba.Camera = self._cameraDevice._Camera
         runner = VimbaRunner()
         wasRunning = self._streamingThread.isRunning()
-        if not wasRunning and active:
+        if not camera._disconnected and not wasRunning and active:
             cam_id = str(self._cameraDevice.id(), "utf-8")
             VIMBA_LOGGER.info("Starting camera %s." % cam_id)
             self._streamingThread.start()
