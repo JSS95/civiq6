@@ -1,6 +1,20 @@
 from PySide6.QtCore import Slot
 from PySide6.QtWidgets import QToolBar, QDoubleSpinBox
+import vimba  # type: ignore[import]
+from civiq6 import VimbaCamera
 from camera_stream import CameraWindow
+from typing import Any
+
+
+VIMBA_LOGGER = vimba.Log.get_instance()
+
+
+def setFeatureValue(cam: VimbaCamera, featName: str, featVal: Any):
+    cam.getFeatureByName(featName).set(featVal)
+    temp = "Set \"%s\" feature of camera \"%s\" to \"%s\""
+    VIMBA_LOGGER.info(
+        temp % (featName, str(cam.cameraDevice().id(), "utf-8"), str(featVal))
+    )
 
 
 class CameraFPSWindow(CameraWindow):
@@ -22,14 +36,14 @@ class CameraFPSWindow(CameraWindow):
         fps = self._fpsSpinBox.value()
         cam = self._camera
         if cam.isAvailable():
-            cam.getFeatureByName("AcquisitionFrameRate").set(fps)
+            setFeatureValue(cam, "AcquisitionFrameRate", fps)
 
     @Slot(bool)
     def _onCameraActiveChange(self, active: bool):
         if active:
             cam = self._camera
             if cam.isAvailable():
-                cam.getFeatureByName("AcquisitionFrameRateMode").set("Basic")
+                setFeatureValue(cam, "AcquisitionFrameRateMode", "Basic")
                 fpsFeature = cam.getFeatureByName("AcquisitionFrameRate")
                 minFPS, maxFPS = fpsFeature.get_range()
                 self._fpsSpinBox.setMinimum(minFPS)
