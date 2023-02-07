@@ -6,7 +6,6 @@ from camera_stream import CameraWindow
 
 
 class CaptureToolBar(QToolBar):
-
     captureRequested = Signal(str)
     recordPathChanged = Signal(str)
     recordRequested = Signal(VideoRecorder.RecorderState)
