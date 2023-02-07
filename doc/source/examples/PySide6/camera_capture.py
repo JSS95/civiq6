@@ -1,14 +1,16 @@
-from PySide6.QtCore import Signal, Slot, QSize
+from PySide6.QtCore import QUrl, Signal, Slot, QSize
 from PySide6.QtWidgets import QToolBar, QLineEdit, QToolButton, QStyle
 from PySide6.QtGui import QIcon
+from imagecapture import ImageCapture
 from videorecorder import VideoRecorder
 from camera_stream import CameraWindow
 
 
 class CaptureToolBar(QToolBar):
     captureRequested = Signal(str)
-    recordPathChanged = Signal(str)
-    recordRequested = Signal(VideoRecorder.RecorderState)
+    recordPathChanged = Signal(QUrl)
+    recordStartRequested = Signal()
+    recordStopRequested = Signal()
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -16,19 +18,19 @@ class CaptureToolBar(QToolBar):
         self._captureButton = QToolButton()
         self._recordPathLineEdit = QLineEdit()
         self._recordButton = QToolButton()
-        self._recorderState = VideoRecorder.RecorderState.StoppedState
+        self._recordState = VideoRecorder.RecorderState.StoppedState
 
         self._capturePathLineEdit.setPlaceholderText("Image capture path")
         self._captureButton.setToolTip("Click to capture image")
-        captureActionIcon = QIcon()
-        captureActionIcon.addFile("../capture.svg", QSize(24, 24))
-        self._captureButton.setIcon(captureActionIcon)
+        captureButtonIcon = QIcon()
+        captureButtonIcon.addFile("../capture.svg", QSize(24, 24))
+        self._captureButton.setIcon(captureButtonIcon)
 
         self._recordPathLineEdit.setPlaceholderText("Video record path")
         self._recordButton.setToolTip("Click to toggle video recording")
-        recordActionIcon = QIcon()
-        recordActionIcon.addFile("../record.svg", QSize(24, 24))
-        self._recordButton.setIcon(recordActionIcon)
+        recordButtonIcon = QIcon()
+        recordButtonIcon.addFile("../record.svg", QSize(24, 24))
+        self._recordButton.setIcon(recordButtonIcon)
 
         self.addWidget(self._capturePathLineEdit)
         self.addWidget(self._captureButton)
@@ -37,40 +39,54 @@ class CaptureToolBar(QToolBar):
         self.addWidget(self._recordButton)
 
         self._captureButton.clicked.connect(self._onCaptureButtonClick)
-        self._recordPathLineEdit.editingFinished.connect(self._onRecordPathEdit)
-        self._recordButton.clicked.connect(self._onRecordActionClick)
+        self._recordPathLineEdit.textChanged.connect(self._onRecordPathEdit)
+        self._recordButton.clicked.connect(self._onRecordButtonClick)
 
     def _onCaptureButtonClick(self):
         path = self._capturePathLineEdit.text()
         self.captureRequested.emit(path)
 
-    def _onRecordPathEdit(self):
-        path = self._recordPathLineEdit.text()
-        self.recordPathChanged.emit(path)
+    def _onRecordPathEdit(self, path: str):
+        self.recordPathChanged.emit(QUrl.fromLocalFile(path))
 
-    def _onRecordActionClick(self):
-        if self._recorderState == VideoRecorder.RecorderState.StoppedState:
-            state = VideoRecorder.RecorderState.RecordingState
+    def _onRecordButtonClick(self):
+        if self._recordState == VideoRecorder.RecorderState.StoppedState:
+            self.recordStartRequested.emit()
         else:
-            state = VideoRecorder.RecorderState.StoppedState
-        self._recorderState = state
-        self.recordRequested.emit(state)
+            self.recordStopRequested.emit()
 
     @Slot(VideoRecorder.RecorderState)
     def setRecorderState(self, state: VideoRecorder.RecorderState):
         if state == VideoRecorder.RecorderState.RecordingState:
+            self._recordButton.setCheckable(True)
             self._recordButton.setChecked(True)
             self._recordButton.setIcon(
                 self.style().standardIcon(QStyle.StandardPixmap.SP_MediaStop)
             )
         elif state == VideoRecorder.RecorderState.StoppedState:
             self._recordButton.setChecked(False)
+            self._recordButton.setCheckable(False)
             icon = QIcon()
             icon.addFile("../record.svg", QSize(24, 24))
             self._recordButton.setIcon(icon)
+        self._recordState = state
 
 
 class CameraCaptureWindow(CameraWindow):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+
+        self._imageCapture = ImageCapture()
+        self._videoRecorder = VideoRecorder()
+
+        self._captureSession.setImageCapture(self._imageCapture)
+        self._captureSession.setRecorder(self._videoRecorder)
+        self._toolBar.captureRequested.connect(self._imageCapture.captureToFile)
+        self._toolBar.recordPathChanged.connect(self._videoRecorder.setOutputLocation)
+        self._toolBar.recordStartRequested.connect(self._videoRecorder.record)
+        self._toolBar.recordStopRequested.connect(self._videoRecorder.stop)
+        self._videoRecorder.recorderStateChanged.connect(self._toolBar.setRecorderState)
+
     def initUI(self):
         super().initUI()
 
