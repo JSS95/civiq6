@@ -34,6 +34,13 @@ These classes can be used similarly to their Qt counterparts and are compatible 
 
 There are a few differences, however...
 
+Running Vimba
+-------------
+
+Before starting any camera, :class:`.VimbaRunner` must be run in separate thread to initiate the Vimba instance.
+
+See :ref:`examples-streaming` page for example.
+
 Capturing and recording
 -----------------------
 
