@@ -18,15 +18,15 @@ CIViQ6 provides classes that are analogous to QtMultimedia classes.
 
    * - CIViQ6
      - QtMultimedia
-   * - VimbaRunner
-     -
-   * - VimbaDevices
+   * - :class:`.VimbaRunner`
+     - \-
+   * - :class:`.VimbaDevices`
      - QMediaDevices
-   * - VimbaCameraDevice
+   * - :class:`.VimbaCameraDevice`
      - QCameraDevice
-   * - VimbaCamera
+   * - :class:`.VimbaCamera`
      - QCamera
-   * - VimbaCaptureSession
+   * - :class:`.VimbaCaptureSession`
      - QMediaCaptureSession
 
 These classes can be used similarly to their Qt counterparts and are compatible to other classes such as QVideoSink or QVideoWidget.

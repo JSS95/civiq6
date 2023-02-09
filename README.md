@@ -8,6 +8,11 @@
 
 CIViQ6 is a Python package which integrates [VimbaPython](https://github.com/alliedvision/VimbaPython) and Qt6 multimedia scheme.
 
+It provides:
+- Class to instantiate the Vimba instance in `QThread`
+- Camera API similar to that of QtMultimedia
+- Compatibility with `QVideoSink` and `QVideoWidget`
+
 The following Qt bindings are supported:
 - [PySide6](https://pypi.org/project/PySide6/)
 - [PyQt6](https://pypi.org/project/PyQt6/)
@@ -16,24 +21,42 @@ This package is tested using Vimba 6.0, VimbaPython 1.2.1, and Mako U-130B camer
 
 # How to use
 
-`VimbaRunner` must be run first in `QThread` to start Vimba instance.
+CIViQ6 imitates QtMultimedia scheme to provide API for the Allied Vision camera device.
 
-After Vimba is started, you can access the vimba camera APIs and acquire frames.
+|     CIViQ6 class    |    Qt6 counterpart   |
+| ------------------- | -------------------- |
+|     VimbaRunner     |           -          |
+|     VimbaDevices    |      QMediaDevices   |
+|  VimbaCameraDevice  |      QCameraDevice   |
+|     VimbaCamera     |        QCamera       |
+| VimbaCaptureSession | QMediaCaptureSession |
 
-CIViQ6 is designed to be similar to Qt6's QtMultimedia framework:
+## Running the Vimba instance
 
-|       Qt class       |  CIViQ6 counterpart  |
-| -------------------- | -------------------- |
-|     QMediaDevices    |      VimbaDevices    |
-|     QCameraDevice    |   VimbaCameraDevice  |
-|       QCamera        |      VimbaCamera     |
-| QMediaCaptureSession |  VimbaCaptureSession |
+`VimbaRunner` is a runner which wraps the VimbaPython API and starts Vimba.
 
-For more information, refer to the documentation and examples.
+To start the Vimba instance, move `VimbaRunner` to a dedicated `QThread` and run it.
+This task must be done before any other Vimba-related operation.
+
+## Streaming the camera
+
+Once the Vimba instance is started, user can construct `VimbaCamera` instance, set it to `VimbaCaptureSession`, and run it just as one would do with `QCamera` and `QMediaCaptureSession`.
+
+Set `QVideoWidget` or `QVideoSink` (or any other `QObject`-based preview) to the capture session to stream the camera.
+
+## Setting the camera properties
+
+`VimbaCamera` provides methods which return VimbaPython's `Feature` objects that can get and set the camera properties.
+
+## Capturing and recording
+
+Unlike Qt6, CIViQ6 does not have default classes that support image capturing and video recording from `VimbaCaptureSession`. User must define own classes that write VimbaPython's `Frame` object to file.
+
+The documentaion provides examples for defining the image capturer and video recorder.
 
 # Examples
 
-Use cases with multithreading are provided in [examples](https://github.com/JSS95/civiq6/tree/master/civiq6/examples) directory.
+Use cases are provided in [examples](https://github.com/JSS95/civiq6/tree/master/civiq6/examples) directory.
 They can be found in documentation as well.
 
 # Installation
