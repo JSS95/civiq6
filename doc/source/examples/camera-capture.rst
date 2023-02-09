@@ -1,3 +1,5 @@
+.. _examples-capturing:
+
 Capturing and recording
 =======================
 
