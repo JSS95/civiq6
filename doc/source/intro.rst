@@ -14,7 +14,6 @@ CIViQ6 vs QtMultimedia
 CIViQ6 provides classes that are analogous to QtMultimedia classes.
 
 .. list-table:: CIViQ6 vs QtMultimedia
-   :widths: 50 50
    :header-rows: 1
 
    * - CIViQ6
@@ -37,7 +36,8 @@ There are a few differences, however...
 Running Vimba
 -------------
 
-Before starting any camera, :class:`.VimbaRunner` must be run in separate thread to initiate the Vimba instance.
+:class:`.VimbaRunner` is a class unique to CIViQ6 without any Qt counterpart.
+Before starting any camera, VimbaRunner must be run in separate thread to initiate the Vimba instance.
 
 See :ref:`examples-streaming` page for example.
 
