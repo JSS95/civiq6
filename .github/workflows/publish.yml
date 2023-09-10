@@ -1,4 +1,4 @@
-name: publish civiq6 to PyPI
+name: publish
 
 on: push
 

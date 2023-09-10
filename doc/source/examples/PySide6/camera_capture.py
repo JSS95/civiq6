@@ -60,9 +60,11 @@ class CaptureToolBar(QToolBar):
         if state == VideoRecorder.RecorderState.RecordingState:
             self._recordButton.setCheckable(True)
             self._recordButton.setChecked(True)
-            self._recordButton.setIcon(
-                self.style().standardIcon(QStyle.StandardPixmap.SP_MediaStop)
-            )
+            st = self.style()
+            if st is not None:
+                self._recordButton.setIcon(
+                    st.standardIcon(QStyle.StandardPixmap.SP_MediaStop)
+                )
         elif state == VideoRecorder.RecorderState.StoppedState:
             self._recordButton.setChecked(False)
             self._recordButton.setCheckable(False)
