@@ -248,14 +248,14 @@ class VimbaCameraDevice(QtCore.QObject):
         """
         Returns true if this :class:`VimbaCameraDevice` is equal to `other`.
         """
-        return type(self) == type(other) and self._Camera == other._Camera
+        return type(self) is type(other) and self._Camera == other._Camera
 
     def __ne__(self, other):
         """
         Returns true if this :class:`VimbaCameraDevice` is different from
         `other`.
         """
-        return type(self) != type(other) or self._Camera != other._Camera
+        return type(self) is not type(other) or self._Camera != other._Camera
 
     def id(self) -> QtCore.QByteArray:
         """Return the device id of the camera."""
