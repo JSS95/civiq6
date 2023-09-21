@@ -40,7 +40,6 @@ repository = "https://github.com/JSS95/civiq6"
 
 [project.optional-dependencies]
 test = [
-    "mypy",
     "imageio",
 ]
 doc = [
