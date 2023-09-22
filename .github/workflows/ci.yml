@@ -46,7 +46,6 @@ jobs:
 
       - name: install package
         run: |
-          pip install -r requirements.txt
           pip install mypy
 
       - name: run mypy check
