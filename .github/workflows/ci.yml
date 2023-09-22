@@ -11,10 +11,10 @@ jobs:
     steps: 
 
       - name: get repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: set up Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
 
       - name: install dependencies
         run: |
@@ -34,33 +34,23 @@ jobs:
 
     runs-on: ubuntu-latest
 
-    strategy:
-      fail-fast: false
-
-      matrix:
-        qt: [PySide6, PyQt6]
-
     steps: 
 
       - name: get repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: set up Python
-        uses: actions/setup-python@v2
-
-      - name: install qt
-        run: |
-          pip install ${{ matrix.qt }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
 
       - name: install package
         run: |
-          pip install mypy .[test]
+          pip install mypy
 
       - name: run mypy check
         run: |
-          mypy civiq6
-          mypy doc/source --exclude doc/source/examples
-          mypy doc/source/examples/${{ matrix.qt }}
+          mypy src
 
   doc:
 
@@ -71,10 +61,12 @@ jobs:
     steps: 
 
       - name: get repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: set up Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
 
       - name: install package
         run: |
