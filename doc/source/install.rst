@@ -6,22 +6,21 @@ Installation
 
 This document explains how to install CIViQ6 package.
 
-Making virtual environment
-==========================
-
-It is recommended to make a dedicated virtual environment to avoid any possible collision with external libraries with different Qt dependencies.
-The easiest way is to use `Anaconda <https://www.anaconda.com/>`_:
+If you just want quick installation, first :ref:`install VimbaPython <install-vimba>`
+Then, run the following command and forget about the rest of this document.
 
 .. code-block:: bash
 
-   $ conda create -n my-env pip
-   $ conda activate my-env
+   $ pip install civiq
 
-You are now in a new environment "my-env", with only `pip <https://pip.pypa.io/en/stable/>`_ package installed.
-Ready to go!
+This will install ``civiq6`` package in your environment.
+
+Developers are encouraged to :ref:`download the source <download-source>` and :ref:`install from the source <install-from-source>`.
 
 Installing VimbaPython
 ======================
+
+.. _install-vimba:
 
 CIViQ is dependent to `VimbaPython <https://github.com/alliedvision/VimbaPython>`_ , which is not distributed by PyPI.
 Go to its repository and follow the instructions to install the package.
@@ -29,14 +28,13 @@ Go to its repository and follow the instructions to install the package.
 Downloading the source (Optional)
 =================================
 
-You can download full source code of CIViQ6 project without installing it by git.
+.. _download-source:
+
+You can download full source code of CIViQ6 project from its repository.
 
 .. code-block:: bash
 
    $ git clone git@github.com:JSS95/civiq6.git
-
-Note that you can download the source with ``pip`` command, but it will install the package at the same time.
-It will be explaned in the next section.
 
 Installing
 ==========
@@ -47,30 +45,25 @@ The package can be installed by
 
    $ pip install [-e] <PyPI name/url/path>[dependency options]
 
-For example, the following code downloads the latest release from PyPI.
+.. rubric:: Install options
 
-.. code-block:: bash
+.. _install-options:
 
-   $ pip install civiq6
-
-.. rubric:: install options
-
-There are two types of install options for developers.
+There are two noticeable install options for developers.
 
 * Install with editable option (``-e``)
-* Install with dependency specification (``[...]``)
+* Install with optional dependencies (``[...]``)
 
-Editable option installs the package as link to the original location.
-Change to the source directly reflects to your environment.
+The editable option allows changes made to the source code to be immediately reflected in the installed package.
+For more information, refer to `pip documentation <https://pip.pypa.io/en/stable/topics/local-project-installs/#editable-installs>`_.
 
-Dependency specification installs additional modules which are required to access extra features of the package.
-You may add them in brackets right after the package argument.
+Optional dependencies can be specified by adding them into brackets right after the package url/path.
+When specified, additional module are installed to help accessing extra features of the package.
 
 Available specifications for CIViQ6 are:
 
-* ``test``: installs modules to run tests
-* ``doc``: installs modules to build documentations and to run the examples
-* ``full``: installs every additional dependency
+* ``doc``: installs modules to build documentations and run examples.
+* ``dev``: installs every additional dependency for developers.
 
 With commas without trailing whitespaces, i.e. ``[A,B]``, you can pass multiple specifications.
 
@@ -97,8 +90,10 @@ For example, the following code installs the package with every additional depen
 Installing from source
 ----------------------
 
+.. _install-from-source:
+
 If you have already downloaded the source, you can install it by passing its path to ``pip install``.
-For example, in the path where ``setup.py`` is located the following command installs the package in editable mode, with full dependencies.
+For example, in the path where ``pyproject.toml`` is located, the following command installs the package in editable mode, with full dependencies for developers.
 
 .. code-block:: bash
 

@@ -41,9 +41,6 @@ dynamic = [
 repository = "https://github.com/JSS95/civiq6"
 
 [project.optional-dependencies]
-test = [
-    "imageio",
-]
 doc = [
     "numpydoc",
     "sphinx",
@@ -51,7 +48,12 @@ doc = [
     "sphinx_rtd_theme",
     "imageio[ffmpeg]",
 ]
-full = ["civiq6[test,doc]"]
+dev = [
+    "flake8",
+    "black",
+    "mypy",
+    "civiq6[doc]",
+]
 
 [tool.setuptools.dynamic]
 version = {attr = "civiq6.version.__version__"}
