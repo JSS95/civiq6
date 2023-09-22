@@ -1,5 +1,6 @@
 [build-system]
 requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
 
 [project]
 name = "civiq6"
@@ -24,6 +25,7 @@ classifiers = [
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
         "Topic :: Multimedia :: Graphics",
         "Topic :: Software Development",
         "Topic :: Software Development :: Libraries :: Python Modules",
@@ -54,3 +56,6 @@ full = ["civiq6[test,doc]"]
 
 [tool.setuptools.dynamic]
 version = {attr = "civiq6.version.__version__"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
