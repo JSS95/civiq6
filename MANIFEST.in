@@ -1,1 +1,1 @@
-include civiq6/py.typed
+include src/civiq6/py.typed
